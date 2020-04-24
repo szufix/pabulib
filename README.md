@@ -1,1 +1,1 @@
-# pabulib
+# Participatory Budgeting Library
