@@ -13,3 +13,5 @@ For cumulative ballots put the word "cumulative" in the first line then number_o
 If the description is not clear please see data in toy_example.
 
 The winners file contain the number of winner in the first line, and in the second line are all the winners separated by comas.
+
+All the data should be put into "Exeperiments" folder.
