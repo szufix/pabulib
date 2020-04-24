@@ -6,11 +6,17 @@ the crucial function is MTC and it is located inside the file voting/methods.py
 It takes three arguments, first is the name of the experiment, second is name of the district/region/instance and the third is the budget limit. It's important to name votes and projects files with the same name -- and that name is the second argument (without ".txt").
 
 ?exp_name?
+
 ├── votes
+
 │   └── txt files
+
 ├── projects
+
 │   └── txt files
+
 └── winners
+
     └── txt files
     
 For approval ballots put the word "approval" in the first line then number_of_voters in the second line, and then each line contains approved candidates separated by comas -- that is, each line correspond to one vote.
