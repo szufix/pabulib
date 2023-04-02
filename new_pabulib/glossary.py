@@ -382,4 +382,6 @@ NAMES['wroclaw_2019'] = {
     'poland_wroclaw_2019_local.pb': 'b',
 }
 
-
+NAMES['snochaczewo'] = {
+    'snochaczewo_1.pb': 's1'
+}
