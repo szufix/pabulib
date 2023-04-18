@@ -1,3 +1,4 @@
+import copy
 import csv
 import math
 
@@ -13,30 +14,33 @@ def convert_winners_to_set(winners):
 
 
 def compute_winners(election, method):
+    election_tmp = copy.deepcopy(election)
     if method == 'mes':
-        winners_tmp = equal_shares(election, completion='add1_utilitarian')
+        try:
+            election_tmp.binary_to_cost_utilities()
+        except:
+            try:
+                election_tmp.score_to_cost_utilities()
+            except:
+                pass
+        winners_tmp = equal_shares(election_tmp, completion='add1_utilitarian')
         winners_tmp = convert_winners_to_set(winners_tmp)
     elif method == 'greedy':
-        winners_tmp = utilitarian_greedy(election)
+        winners_tmp = utilitarian_greedy(election_tmp)
         winners_tmp = convert_winners_to_set(winners_tmp)
     elif method == 'equal':
-        winners_tmp = equal_power(election)
+        winners_tmp = equal_power(election_tmp)
         winners_tmp = convert_winners_to_set(winners_tmp)
     else:
         winners_tmp = None
     return winners_tmp
 
-# approval -> to cost
-# ordinal -> to cost
-# cumulative -> to cost
 
-
-def get_winners(path, method):
+def import_election(region, name):
+    path = f'data/{region}/{name}'
     election = Election()
     election.read_from_files(path)
-    if method == 'mes':
-        election.binary_to_cost_utilities()
-    return compute_winners(election, method)
+    return election
 
 
 def import_data(path):

@@ -7,6 +7,8 @@ from matplotlib.markers import MarkerStyle
 import sys
 
 import ast
+from glossary import *
+from _utils import *
 
 from scipy import stats
 
@@ -23,10 +25,10 @@ plt.rcParams["font.family"] = "Times New Roman"
 
 
 def get_max_cost(region, budget):
-    if region == 'zabrze_2020':
-        return budget
-    elif region == 'krakow_2020':
+    if region in ['krakow_2020', 'krakow_2021', 'krakow_2022']:
         return budget*0.4
+    elif region in ['warszawa_2020', 'warszawa_2021', 'warszawa_2022', 'warszawa_2023']:
+        return budget*0.2
     # print(region)
 
 
@@ -134,9 +136,9 @@ def verify_cost(winners):
     print(total)
 
 
-def _store_results_in_csv(region, name, method, A, B, C):
+def _store_results_in_csv(region, name, method, A, B, C, type):
     name = name.replace('.pb','')
-    path = os.path.join(os.getcwd(), "margins", region, f'{name}_{method}.csv')
+    path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
         writer.writerow(["id", "cost", "max_cost", "ratio", "difference"])
@@ -146,64 +148,47 @@ def _store_results_in_csv(region, name, method, A, B, C):
             writer.writerow([A[i], B[i], C[i], C[i] / B[i], C[i] - B[i]])
 
 
-def get_winners(election, method):
-    if method == 'mes':
-        winners_tmp = equal_shares(election, completion='add1_utilitarian')
-        winners_tmp = convert_winners(winners_tmp)
-    elif method == 'greedy':
-        winners_tmp = utilitarian_greedy(election)
-        winners_tmp = convert_winners(winners_tmp)
-    return winners_tmp
+# def get_winners(election, method):
+#     if method == 'mes':
+#         winners_tmp = equal_shares(election, completion='add1_utilitarian')
+#         winners_tmp = convert_winners(winners_tmp)
+#     elif method == 'greedy':
+#         winners_tmp = utilitarian_greedy(election)
+#         winners_tmp = convert_winners(winners_tmp)
+#     return winners_tmp
 
 
-def compute_margins(region, name, method):
+def compute_winning_margins(region, name, method):
     A = []
     B = []
     C = []
 
-    path = f"data/{region}/{name}"
+    election = import_election(region, name)
 
-    election = Election()
-    election.read_from_files(path)
-
-    # if method == 'mes':
-        # election.binary_to_cost_utilities()
-
-    winners_default = get_winners(election, method)
+    winners_default = compute_winners(election, method)
 
     PRECISION = 100
-    # MAX_COST = 800000  # for Poznan
     MAX_COST = get_max_cost(region, election.budget)
-    MIN_COST = 100
 
     for c in election.profile:
 
-        # print(sum([d.cost for d in election.profile]))
-        # for d in election.profile:
-        #     print(d.cost)
-
         if c.id in winners_default:
-            # print('winner', c.id)
 
             original_c_cost = c.cost
 
             left = c.cost
             right = MAX_COST
-            c.cost = right
 
             while right - left > PRECISION:
-                # print(left, right)
-
-                winners_tmp = get_winners(election, method)
 
                 c.cost = int(left + (right - left) / 2)
+
+                winners_tmp = compute_winners(election, method)
 
                 if c.id in winners_tmp:
                     left = c.cost
                 else:
                     right = c.cost
-
-            # print(f'{c.id},{round(c.cost/original_c_cost, 3)},{c.cost-original_c_cost},{original_c_cost}')
 
             A.append(c.id)
             B.append(original_c_cost)
@@ -211,33 +196,47 @@ def compute_margins(region, name, method):
 
             c.cost = original_c_cost
 
-        else:
-            continue
-            # print('loser', c.id)
-            #
-            # original_c_cost = c.cost
-            #
-            # left = MIN_COST
-            # right = c.cost
-            # c.cost = left
-            #
-            # while right - left > PRECISION:
-            #
-            #     winners_mes_tmp = equal_shares(election, completion='add1_utilitarian')
-            #     winners_mes_tmp = convert_winners(winners_mes_tmp)
-            #
-            #     c.cost = int(left + (right - left) / 2)
-            #
-            #     if winners_mes_tmp == winners_mes_default:
-            #         left = c.cost
-            #     else:
-            #         right = c.cost
-            #
-            # print(round(c.cost/original_c_cost, 3), original_c_cost-c.cost, original_c_cost)
-            #
-            # c.cost = original_c_cost
+    _store_results_in_csv(region, name, method, A, B, C, 'winning')
 
-    _store_results_in_csv(region, name, method, A, B, C)
+
+def compute_losing_margins(region, name, method):
+    A = []
+    B = []
+    C = []
+
+    election = import_election(region, name)
+    winners_default = compute_winners(election, method)
+
+    PRECISION = 100
+    MIN_COST = 100
+
+    for c in election.profile:
+
+        if c.id not in winners_default:
+
+            original_c_cost = c.cost
+
+            left = MIN_COST
+            right = c.cost
+
+            while right - left > PRECISION:
+
+                c.cost = int(left + (right - left) / 2)
+
+                winners_tmp = compute_winners(election, method)
+
+                if c.id in winners_tmp:
+                    left = c.cost
+                else:
+                    right = c.cost
+
+            A.append(c.id)
+            B.append(original_c_cost)
+            C.append(c.cost)
+
+            c.cost = original_c_cost
+
+    _store_results_in_csv(region, name, method, A, B, C, 'losing')
 
 
 def test_budgets(region, name):
@@ -253,12 +252,7 @@ def test_budgets(region, name):
     print(f'{budget}, {sum_costs}, {ratio}')
 
 
-
-
 if __name__ == "__main__":
-
-    instance_type = 'approval'
-    distance_id = 'jaccard'
 
     if len(sys.argv) < 2:
         regions = [
@@ -271,7 +265,9 @@ if __name__ == "__main__":
 
         for name in NAMES[region]:
             print(name)
-            compute_margins(region, name, 'greedy')
-            compute_margins(region, name, 'mes')
+            compute_winning_margins(region, name, 'greedy')
+            compute_winning_margins(region, name, 'mes')
+            compute_losing_margins(region, name, 'greedy')
+            compute_losing_margins(region, name, 'mes')
             # test_budgets(region, name)
 

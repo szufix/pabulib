@@ -1,34 +1,31 @@
 import csv
 import os
-import matplotlib.pyplot as plt
 from glossary import NAMES
-from matplotlib.transforms import Bbox
-from matplotlib.markers import MarkerStyle
 import sys
 import statistics
 import ast
+from _utils import *
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 from scipy import stats
 
-from sklearn.manifold import MDS
-import numpy as np
-
-from PIL import Image
-import math
-
-from pabutools.rules import equal_shares, utilitarian_greedy
 from pabutools.model import Election
+
 nice_name = {
-    'warszawa_2020': 'Warszawa 2020',
-    'warszawa_2021': 'Warszawa 2021',
-    'warszawa_2022': 'Warszawa 2022',
-    'warszawa_2023': 'Warszawa 2023',
+    'warszawa_2021': 'Warszawa (elections held in 2020)',
+    'warszawa_2022': 'Warszawa (elections held in 2021)',
+    'warszawa_2023': 'Warszawa (elections held in 2022)',
+    'krakow_2020': 'Kraków (elections held in 2020)',
+    'krakow_2021': 'Kraków (elections held in 2021)',
+    'krakow_2022': 'Kraków  (elections held in 2022)',
 }
 
-def import_values(region, name, method, limit=10):
 
+def import_values(region, name, method, limit=10, type=None):
     name = name.replace('.pb', '')
-    path = f"margins/{region}/{name}_{method}.csv"
+    path = f"margins/{type}/{region}/{name}_{method}.csv"
 
     values = []
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
@@ -42,13 +39,13 @@ def import_values(region, name, method, limit=10):
     return values
 
 
-def print_boxplots(region, boxplots, labels, limit=10):
+def print_boxplots(region, boxplots, labels, limit=10, type=None):
     fig, ax = plt.subplots()
 
     positions = []
-    for i in range(int(len(boxplots)/2)):
-        positions.append(i*4)
-        positions.append(i*4+1)
+    for i in range(int(len(boxplots) / 2)):
+        positions.append(i * 4)
+        positions.append(i * 4 + 1)
 
     bplot = ax.boxplot(boxplots, labels=labels, patch_artist=True, positions=positions)
 
@@ -65,16 +62,18 @@ def print_boxplots(region, boxplots, labels, limit=10):
         bplot.set_alpha(0.5)
 
     plt.xticks(rotation=90, fontsize=6)
-    plt.ylim([0,limit+0.5])
+    if limit > 1:
+        plt.ylim([0, limit + 0.5])
+    else:
+        plt.ylim([0, limit])
     plt.yticks(fontsize=20)
     plt.ylabel('Ratio', fontsize=20)
     plt.title(nice_name[region], fontsize=20)
-    plt.savefig(f'images/margins/{region}', dpi=200, bbox_inches='tight')
+    plt.savefig(f'images/margins/{type}/{region}', dpi=200, bbox_inches='tight')
     plt.show()
 
 
 def get_budget_ratio(region, name):
-
     path = f"data/{region}/{name}"
 
     election = Election()
@@ -88,22 +87,31 @@ def get_budget_ratio(region, name):
     # return len(election.profile)
 
 
+def diversity_of_votes(region, name):
+    election = import_election(region, name)
+    total_similarity = 0
+    for c1 in election.profile.values():
+        for c2 in election.profile.values():
+            a1 = set(c1.keys())
+            a2 = set(c2.keys())
+            similarity = len(a1.intersection(a2)) / len(a1.union(a2))
+            total_similarity += similarity
+    return total_similarity / len(election.profile) / len(election.profile)
+
+
 if __name__ == "__main__":
 
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    instance_type = 'approval'
-    distance_id = 'jaccard'
-    limit = 50
-
+    limit = 1
+    type_ = 'losing'
 
     if len(sys.argv) < 2:
         regions = [
-            'warszawa_2020',
-            'warszawa_2021',
-            'warszawa_2022',
-            'warszawa_2023',
+            # 'warszawa_2023',
+            # 'warszawa_2022',
+            # 'warszawa_2021',
+            'krakow_2022',
+            # 'krakow_2021',
+            # 'krakow_2020',
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -114,27 +122,27 @@ if __name__ == "__main__":
         labels = []
         budget_ratios = []
         medians = []
+        ds = []
 
         for i, name in enumerate(NAMES[region]):
-            mes = import_values(region, name, 'mes', limit=limit)
+            mes = import_values(region, name, 'mes', limit=limit, type=type_)
             boxplots.append(mes)
             labels.append(f'MES {NAMES[region][name]}')
 
-            greedy = import_values(region, name, 'greedy', limit=limit)
+            greedy = import_values(region, name, 'greedy', limit=limit, type=type_)
             boxplots.append(greedy)
             labels.append(f'Gr. {NAMES[region][name]}')
 
             budget_ratios.append(get_budget_ratio(region, name))
             medians.append(statistics.median(mes))
+            # d = diversity_of_votes(region, name)
+            # print(name, round(d, 4))
+            # ds.append(d)
 
-        print_boxplots(region, boxplots, labels, limit=limit)
+        print_boxplots(region, boxplots, labels, limit=limit, type=type_)
 
         print(round(stats.pearsonr(budget_ratios, medians)[0], 3))
-        plt.scatter(budget_ratios, medians)
+        # plt.scatter(budget_ratios, medians)
         # plt.show()
 
-
-# -0.521
-# -0.623
-# -0.532
-# 0.086
+        # print('AVG', round(stats.pearsonr(budget_ratios, ds)[0], 3))
