@@ -256,7 +256,10 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         regions = [
-            'krakow_2020',
+            # 'krakow_2020',
+            # 'krakow_2021',
+            # 'krakow_2022',
+            'warszawa_2023'
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -266,8 +269,9 @@ if __name__ == "__main__":
         for name in NAMES[region]:
             print(name)
             compute_winning_margins(region, name, 'greedy')
-            compute_winning_margins(region, name, 'mes')
+            # compute_winning_margins(region, name, 'mes')
             compute_losing_margins(region, name, 'greedy')
-            compute_losing_margins(region, name, 'mes')
+            # compute_losing_margins(region, name, 'mes')
             # test_budgets(region, name)
+            break
 

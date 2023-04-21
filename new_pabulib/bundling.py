@@ -24,6 +24,10 @@ def main_experiment(region, name, method):
 
     election = import_election(region, name)
     winners = compute_winners(election, method)
+    print(winners)
+
+    for c in election.profile:
+        print(c, len(election.profile[c].values()))
 
     results = {
         'win, both win': 0,
@@ -48,6 +52,7 @@ def main_experiment(region, name, method):
                 results['win, both lose'] += 1
         else:
             if c1.id in winners and c2.id in winners:
+                print(c1.id, c2.id)
                 results['lose, both win'] += 1
             elif c1.id in winners or c2.id in winners:
                 results['lose, single win'] += 1
@@ -61,7 +66,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         regions = [
-            'warszawa_2023',
+            'warszawa_2021',
         ]
     else:
         regions = [str(sys.argv[1])]

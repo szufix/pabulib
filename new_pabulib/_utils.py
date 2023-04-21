@@ -15,22 +15,16 @@ def convert_winners_to_set(winners):
 
 def compute_winners(election, method):
     election_tmp = copy.deepcopy(election)
+    election_tmp.score_to_cost_utilities()
     if method == 'mes':
-        try:
-            election_tmp.binary_to_cost_utilities()
-        except:
-            try:
-                election_tmp.score_to_cost_utilities()
-            except:
-                pass
         winners_tmp = equal_shares(election_tmp, completion='add1_utilitarian')
         winners_tmp = convert_winners_to_set(winners_tmp)
     elif method == 'greedy':
         winners_tmp = utilitarian_greedy(election_tmp)
         winners_tmp = convert_winners_to_set(winners_tmp)
-    elif method == 'equal':
-        winners_tmp = equal_power(election_tmp)
-        winners_tmp = convert_winners_to_set(winners_tmp)
+    # elif method == 'equal':
+    #     winners_tmp = equal_power(election_tmp)
+    #     winners_tmp = convert_winners_to_set(winners_tmp)
     else:
         winners_tmp = None
     return winners_tmp

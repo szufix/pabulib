@@ -101,8 +101,8 @@ def diversity_of_votes(region, name):
 
 if __name__ == "__main__":
 
-    limit = 1
-    type_ = 'losing'
+    limit = 10
+    type_ = 'winning'
 
     if len(sys.argv) < 2:
         regions = [
@@ -110,8 +110,8 @@ if __name__ == "__main__":
             # 'warszawa_2022',
             # 'warszawa_2021',
             'krakow_2022',
-            # 'krakow_2021',
-            # 'krakow_2020',
+            'krakow_2021',
+            'krakow_2020',
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -125,6 +125,7 @@ if __name__ == "__main__":
         ds = []
 
         for i, name in enumerate(NAMES[region]):
+            print(name)
             mes = import_values(region, name, 'mes', limit=limit, type=type_)
             boxplots.append(mes)
             labels.append(f'MES {NAMES[region][name]}')
@@ -133,15 +134,15 @@ if __name__ == "__main__":
             boxplots.append(greedy)
             labels.append(f'Gr. {NAMES[region][name]}')
 
-            budget_ratios.append(get_budget_ratio(region, name))
-            medians.append(statistics.median(mes))
+            # budget_ratios.append(get_budget_ratio(region, name))
+            # medians.append(statistics.median(mes))
             # d = diversity_of_votes(region, name)
             # print(name, round(d, 4))
             # ds.append(d)
 
         print_boxplots(region, boxplots, labels, limit=limit, type=type_)
 
-        print(round(stats.pearsonr(budget_ratios, medians)[0], 3))
+        # print(round(stats.pearsonr(budget_ratios, medians)[0], 3))
         # plt.scatter(budget_ratios, medians)
         # plt.show()
 
