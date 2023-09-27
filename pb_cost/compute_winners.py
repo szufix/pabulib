@@ -231,13 +231,12 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
 if __name__ == "__main__":
 
-    num_rounds = 10000
 
     if len(sys.argv) >= 2:
         regions = [str(sys.argv[1])]
     else:
         regions = [
-            'warszawa_2023'
+            'lublin_2020'
         ]
 
     for region in regions:
@@ -247,23 +246,7 @@ if __name__ == "__main__":
         else:
             names = NAMES[region]
 
-
         for name in names:
             print(name)
 
-            compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
-            compute_iterative_game(region, name, 'greedy_cardinality_sat', num_rounds=num_rounds)
-            compute_iterative_game(region, name, 'phragmen', num_rounds=num_rounds)
-            compute_iterative_game(region, name, 'mes_phragmen', num_rounds=num_rounds)
-
-            # compute_losing_margins(region, name, 'greedy_cost_sat')
-            # compute_losing_margins(region, name, 'greedy_cardinality_sat')
-            # compute_losing_margins(region, name, 'phragmen')
-
-            # compute_losing_margins(region, name, 'mes_phragmen')
-
-            # test_budgets(region, name)
-
-
-
-# [mpq(21113,1), mpq(22761,1), mpq(23185,1), mpq(23344,1), mpq(24681,1), mpq(27296,1), mpq(31082,1), mpq(33724,1), mpq(34884,1), mpq(35758,1), mpq(36028,1), mpq(36568,1), mpq(38692,1), mpq(39283,1), mpq(40585,1), mpq(40962,1), mpq(41859,1), mpq(42952,1), mpq(44897,1), mpq(45874,1), mpq(47310,1), mpq(48791,1), mpq(49222,1), mpq(49332,1), mpq(50036,1), mpq(50824,1), mpq(56388,1), mpq(66375,1), mpq(68931,1)]
+            compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=1)

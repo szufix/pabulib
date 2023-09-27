@@ -2,23 +2,13 @@ import copy
 import csv
 import math
 
-# from pabutools.rules import equal_shares, utilitarian_greedy
-# from pabutools.model import Election
-
-
+from pabutools.election import Cost_Sat, Cardinality_Sat
 from pabutools.election import parse_pabulib
-
-from pabutools.election import Cost_Sat, Cardinality_Sat
-from pabutools.rules import greedy_utilitarian_welfare, method_of_equal_shares
-
-from pabutools.election import Instance, Project, ApprovalProfile, ApprovalBallot
-from pabutools.election import Cost_Sat, Cardinality_Sat
-from pabutools.rules import greedy_utilitarian_welfare, method_of_equal_shares, sequential_phragmen
-from pabutools.rules import exhaustion_by_budget_increase, popularity_comparison
 from pabutools.rules import completion_by_rule_combination
+from pabutools.rules import exhaustion_by_budget_increase
+from pabutools.rules import greedy_utilitarian_welfare, method_of_equal_shares, sequential_phragmen
 
 
-# First define MES iterated and completed (to simplify)
 def mes_full(instance, profile):
     return completion_by_rule_combination(
         instance,
@@ -44,6 +34,9 @@ def mes_phragmen(instance, profile):
             {"sat_class": Cost_Sat}, {}
         ],
     )
+
+
+
 
 
 
@@ -128,3 +121,24 @@ def equal_power(e):
         remaining.remove(best_c)
         remaining = set(c for c in remaining if c.cost + costW <= e.budget)
     return W
+
+
+def get_total_support(profile):
+    support = 0
+    for vote in profile:
+        support += len(vote)
+    return support
+
+
+def get_supporters(profile, c):
+    support = 0
+    for vote in profile:
+        if c.name in vote:
+            support += 1
+    return support
+
+
+def sort_by_indexes(lst, indexes, reverse=False):
+  return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
+          x[0], reverse=reverse)]
+

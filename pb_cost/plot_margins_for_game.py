@@ -9,14 +9,14 @@ from _utils import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-from scipy import stats
 import matplotlib.ticker as ticker
+from scipy import stats
 
 nice_name = {
     'mes': 'MES',
     'greedy': "Greedy",
-    'greedy_cost_sat': 'BasicAV',
-    'greedy_cardinality_sat': 'AVoverCost',
+    'greedy_cost_sat': 'GreedyAV',
+    'greedy_cardinality_sat': 'GreedyCost',
     'phragmen': 'Phragmén',
     'mes_phragmen': 'MES (+Ph.)',
 
@@ -24,22 +24,22 @@ nice_name = {
 
     'warszawa_2021': 'Warsaw 2021',
     'warszawa_2022': 'Warsaw 2022',
-    'warszawa_2023': 'Warsaw',
+    'warszawa_2023': 'Warsaw 2023',
     'krakow_2020': 'Kraków 2020',
     'krakow_2021': 'Kraków 2021',
     'krakow_2022': 'Kraków 2022',
 }
 
+
 def get_name(region):
     if region in ['krakow_2020', 'krakow_2021', 'krakow_2022']:
         return 'Score'
     elif region in ['warszawa_2020', 'warszawa_2021', 'warszawa_2022', 'warszawa_2023']:
-        return 'Number of votes'
+        return 'Votes'
 
-
-def import_values(region, name, method, limit=10, type=None):
+def import_values(region, name, method, limit=10, type=None, add=''):
     name = name.replace('.pb', '')
-    path = f"margins/{type}/{region}/{name}_{method}.csv"
+    path = f"margins/{type}/{region}/{name}_{method}_{add}.csv"
 
     costs = {}
     max_costs = {}
@@ -67,18 +67,22 @@ def get_supporters(profile, c):
     return support
 
 
-def print_margin_plot(region, name, instance, profile,
+def print_margin_plot_for_game(region, name, instance, profile,
                               winning_costs, winning_max_costs,
-                              losing_costs, losing_max_costs):
+                              losing_costs, losing_max_costs, add,
+                               _original_winners, o_instance):
     fig, ax = plt.subplots()
 
     support = []
     costs = []
     max_costs = []
     winning = []
+    original_winners = []
+    original_costs = []
 
     for c in instance:
         support.append(get_supporters(profile, c))
+        original_winners.append(_original_winners[c.name])
         if c.name in winning_costs:
             winning.append(True)
             costs.append(winning_costs[c.name])
@@ -88,19 +92,22 @@ def print_margin_plot(region, name, instance, profile,
             costs.append(losing_costs[c.name])
             max_costs.append(losing_max_costs[c.name])
 
+    for c in o_instance:
+        original_costs.append(c.cost)
+
     ordered_costs = sort_by_indexes(costs, support, True)
     ordered_max_costs = sort_by_indexes(max_costs, support, True)
-    ordered_winning = sort_by_indexes(winning, support, True)
+    ordered_winners = sort_by_indexes(winning, support, True)
     ordered_support = sort_by_indexes(support, support, True)
+    ordered_original_costs = sort_by_indexes(original_costs, support, True)
+    ordered_original_winners = sort_by_indexes(original_winners, support, True)
 
     # winning_pos = [i for i in range(len(winning_costs))]
     # losing_pos = [i+len(winning_costs) for i in range(len(losing_costs))]
 
-
     for i in range(len(ordered_costs)):
-        if ordered_winning[i]:
-            # color = 'royalblue'
-            color = 'forestgreen'
+        if ordered_winners[i]:
+            color = 'royalblue'
         else:
             color = 'indianred'
 
@@ -110,28 +117,21 @@ def print_margin_plot(region, name, instance, profile,
         else:
             plt.bar(i, ordered_max_costs[i], color=color, alpha=0.9)
 
+        # plt.bar(i, ordered_max_costs[i], color=color, alpha=alpha_2)
+        # plt.bar(i, ordered_costs[i], color=color, alpha=alpha_1)
         plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
 
+        # print(len(ordered_original_winners), len(ordered_costs))
+        if ordered_original_winners[i]:
+            plt.plot(i, ordered_original_costs[i], marker="D", linestyle="", alpha=1, color="black")
 
-    # for i in range(len(ordered_costs)):
-    #     if ordered_winning[i]:
-    #         color = 'royalblue'
-    #         alpha_1 = 0.9
-    #         alpha_2 = 0.5
-    #     else:
-    #         color = 'indianred'
-    #         alpha_1 = 0.5
-    #         alpha_2 = 0.9
-    #
-    #     plt.bar(i, ordered_max_costs[i], color=color, alpha=alpha_2)
-    #     plt.bar(i, ordered_costs[i], color=color, alpha=alpha_1)
-    #     plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
         #
         # plt.bar(str(ordered_support[i]), ordered_max_costs[i], color=color, alpha=alpha_2)
         # plt.bar(str(ordered_support[i]), ordered_costs[i], color=color, alpha=alpha_1)
         # plt.bar(str(ordered_support[i]), ordered_costs[i], fill=None, alpha=1, edgecolor='black')
     print(region, instance.budget_limit)
-    plt.ylim([0, 0.45*int(instance.budget_limit)*1.02])
+    # print(instance.budget_limit))
+    plt.ylim([0, 0.25*int(instance.budget_limit)*1.02])
 
     # ax.set_xticklabels([str(ordered_support[i]) for i in range(len(ordered_support))])
     # ax.set_xticklabels(ordered_support)
@@ -153,9 +153,11 @@ def print_margin_plot(region, name, instance, profile,
     # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
     #           fontsize=20)
     plt.title(f'{nice_name.get(rule, rule)}', fontsize=24)
+
     name = name.replace('.pb', '')
-    plt.savefig(f'images/margins/{region}/{name}_{rule}', dpi=200, bbox_inches='tight')
+    plt.savefig(f'images/margins/{region}/{name}_{rule}_{add}', dpi=200, bbox_inches='tight')
     # plt.show()
+
 
 
 if __name__ == "__main__":
@@ -191,12 +193,25 @@ if __name__ == "__main__":
         for i, name in enumerate(NAMES[region]):
             print(name)
             for rule in rules:
+                add = '10000'
 
-                winning_costs, winning_max_costs = import_values(region, name, rule, type='winning')
-                losing_costs, losing_max_costs = import_values(region, name, rule, type='losing')
+                o_instance, o_profile = import_election(region, name)
+                original_winners_list = compute_winners(o_instance, o_profile, rule)
+                original_winners = {}
+                for p in o_instance:
+                    if p in original_winners_list:
+                        original_winners[p.name] = 1
+                    else:
+                        original_winners[p.name] = 0
+
+                winning_costs, winning_max_costs = import_values(region, name, rule,
+                                                                 type='winning', add=add)
+                losing_costs, losing_max_costs = import_values(region, name, rule,
+                                                               type='losing', add=add)
                 instance, profile = import_election(region, name)
 
-                print_margin_plot(region, name, instance, profile,
+                print_margin_plot_for_game(region, name, instance, profile,
                                   winning_costs, winning_max_costs,
-                                  losing_costs, losing_max_costs)
+                                  losing_costs, losing_max_costs, add,
+                                           original_winners, o_instance)
 

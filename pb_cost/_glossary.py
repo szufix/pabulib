@@ -21,6 +21,7 @@ NAMES['poznan_2023'] = {
 }
 
 # WARSZAWA
+
 NAMES['warszawa_2023'] = {
     # 'poland_warszawa_2023_bemowo.pb': 'Bemowo',
     # 'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
@@ -385,3 +386,12 @@ NAMES['wroclaw_2019'] = {
 NAMES['snochaczewo'] = {
     'snochaczewo_1.pb': 's1'
 }
+
+NAMES['wieliczka_2023'] = {
+    'poland_wieliczka_2023_green-budget.pb': ''
+}
+
+NAMES['lublin_2020'] = {
+    'poland_lublin_2020_.pb': ''
+}
+

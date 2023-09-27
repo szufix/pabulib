@@ -15,7 +15,6 @@ from scipy import stats
 
 from sklearn.manifold import MDS
 import numpy as np
-# import mapel.elections as mapel
 from PIL import Image
 import math
 
@@ -27,6 +26,30 @@ from pabutools.rules import max_additive_utilitarian_welfare
 plt.rcParams["font.family"] = "Times New Roman"
 
 
+
+def import_data(path):
+    meta = {}
+    projects = {}
+    votes = {}
+    with open(path, 'r', newline='', encoding="utf-8") as csvfile:
+        section = ""
+        header = []
+        reader = csv.reader(csvfile, delimiter=';')
+        for row in reader:
+            if str(row[0]).strip().lower() in ["meta", "projects", "votes"]:
+                section = str(row[0]).strip().lower()
+                header = next(reader)
+            elif section == "meta":
+                meta[row[0]] = row[1].strip()
+            elif section == "projects":
+                projects[row[0]] = {}
+                for it, key in enumerate(header[1:]):
+                    projects[row[0]][key.strip()] = row[it + 1].strip()
+            elif section == "votes":
+                votes[row[0]] = {}
+                for it, key in enumerate(header[1:]):
+                    votes[row[0]][key.strip()] = row[it + 1].strip()
+    return meta, projects, votes
 
 
 def jaccard_distance(ac1, ac2):
@@ -108,9 +131,9 @@ def verify_cost(winners):
     print(total)
 
 
-def _store_results_in_csv(region, name, method, A, B, C, type):
+def _store_results_in_csv(region, name, method, A, B, C, type, add):
     name = name.replace('.pb','')
-    path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}.csv')
+    path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}_{add}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
         writer.writerow(["id", "cost", "max_cost", "ratio", "difference"])
@@ -118,7 +141,6 @@ def _store_results_in_csv(region, name, method, A, B, C, type):
         #     print(A[i], B[i], C[i])
         #     print(A[i], B[i], C[i], C[i] / B[i], C[i] - B[i])
             writer.writerow([A[i], B[i], C[i], float(C[i] / B[i]), C[i] - B[i]])
-
 
 # def get_winners(election, method):
 #     if method == 'mes':
@@ -129,13 +151,29 @@ def _store_results_in_csv(region, name, method, A, B, C, type):
 #         winners_tmp = convert_winners(winners_tmp)
 #     return winners_tmp
 
+def update_costs_from_game(instance, region, name, method, add):
+    new_cost = {}
+    name = name.replace('.pb','')
+    path = os.path.join(os.getcwd(), "games", region, f'{name}_{method}_{add}.csv')
+    with open(path, 'r', newline='') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=';')
 
-def compute_winning_margins(region, name, method):
+        for row in reader:
+            new_cost[str(row['id'])] = float(row['last_cost'])
+
+    for p in instance:
+        p.cost = int(new_cost[p.name])
+
+    return instance
+
+def compute_winning_margins_for_game(region, name, method, add):
     A = []
     B = []
     C = []
 
     instance, profile = import_election(region, name)
+
+    instance = update_costs_from_game(instance, region, name, method, add)
 
     winners_default = compute_winners(instance, profile, method)
 
@@ -168,15 +206,17 @@ def compute_winning_margins(region, name, method):
 
             c.cost = original_c_cost
 
-    _store_results_in_csv(region, name, method, A, B, C, 'winning')
+    _store_results_in_csv(region, name, method, A, B, C, 'winning', add)
 
 
-def compute_losing_margins(region, name, method):
+def compute_losing_margins_for_game(region, name, method, add):
     A = []
     B = []
     C = []
 
     instance, profile = import_election(region, name)
+
+    update_costs_from_game(instance, region, name, method, add)
 
     winners_default = compute_winners(instance, profile, method)
 
@@ -209,7 +249,7 @@ def compute_losing_margins(region, name, method):
 
             c.cost = original_c_cost
 
-    _store_results_in_csv(region, name, method, A, B, C, 'losing')
+    _store_results_in_csv(region, name, method, A, B, C, 'losing', add)
 
 
 # def test_budgets(region, name):
@@ -246,16 +286,16 @@ if __name__ == "__main__":
 
         for name in NAMES[region]:
             print(name)
-            compute_winning_margins(region, name, 'greedy_cost_sat')
-            compute_winning_margins(region, name, 'greedy_cardinality_sat')
-            compute_winning_margins(region, name, 'phragmen')
-            compute_winning_margins(region, name, 'mes_phragmen')
 
-            compute_losing_margins(region, name, 'greedy_cost_sat')
-            compute_losing_margins(region, name, 'greedy_cardinality_sat')
-            compute_losing_margins(region, name, 'phragmen')
-            compute_losing_margins(region, name, 'mes_phragmen')
+            add = '10000'
 
-            # test_budgets(region, name)
+            compute_winning_margins_for_game(region, name, 'greedy_cost_sat', add)
+            compute_winning_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            compute_winning_margins_for_game(region, name, 'phragmen', add)
+            compute_winning_margins_for_game(region, name, 'mes_phragmen', add)
 
+            compute_losing_margins_for_game(region, name, 'greedy_cost_sat', add)
+            compute_losing_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            compute_losing_margins_for_game(region, name, 'phragmen', add)
+            compute_losing_margins_for_game(region, name, 'mes_phragmen', add)
 
