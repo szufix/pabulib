@@ -151,6 +151,7 @@ def _store_results_in_csv(region, name, method, A, B, C, type, add):
 #         winners_tmp = convert_winners(winners_tmp)
 #     return winners_tmp
 
+
 def update_costs_from_game(instance, region, name, method, add):
     new_cost = {}
     name = name.replace('.pb','')
@@ -284,18 +285,20 @@ if __name__ == "__main__":
         else:
             names = NAMES[region]
 
-        for name in NAMES[region]:
+        for name in names:
             print(name)
 
             add = '10000'
 
-            compute_winning_margins_for_game(region, name, 'greedy_cost_sat', add)
-            compute_winning_margins_for_game(region, name, 'greedy_cardinality_sat', add)
-            compute_winning_margins_for_game(region, name, 'phragmen', add)
-            compute_winning_margins_for_game(region, name, 'mes_phragmen', add)
+            # compute_winning_margins_for_game(region, name, 'greedy_cost_sat', add)
+            # compute_winning_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            # compute_winning_margins_for_game(region, name, 'phragmen', add)
+            # compute_winning_margins_for_game(region, name, 'mes_phragmen', add)
+            compute_winning_margins_for_game(region, name, 'mes_card_phragmen', add)
 
-            compute_losing_margins_for_game(region, name, 'greedy_cost_sat', add)
-            compute_losing_margins_for_game(region, name, 'greedy_cardinality_sat', add)
-            compute_losing_margins_for_game(region, name, 'phragmen', add)
-            compute_losing_margins_for_game(region, name, 'mes_phragmen', add)
+            # compute_losing_margins_for_game(region, name, 'greedy_cost_sat', add)
+            # compute_losing_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            # compute_losing_margins_for_game(region, name, 'phragmen', add)
+            # compute_losing_margins_for_game(region, name, 'mes_phragmen', add)
+            compute_losing_margins_for_game(region, name, 'mes_card_phragmen', add)
 

@@ -388,7 +388,7 @@ NAMES['snochaczewo'] = {
 }
 
 NAMES['wieliczka_2023'] = {
-    'poland_wieliczka_2023_green-budget.pb': ''
+    'poland_wieliczka_2023_green-budget.pb': 'Wieliczka'
 }
 
 NAMES['lublin_2020'] = {

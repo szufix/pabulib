@@ -152,7 +152,7 @@ def print_margin_plot_for_game(region, name, instance, profile,
     plt.ylabel('Cost (in millions)', fontsize=20)
     # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
     #           fontsize=20)
-    plt.title(f'{nice_name.get(rule, rule)}', fontsize=24)
+    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=24)
 
     name = name.replace('.pb', '')
     plt.savefig(f'images/margins/{region}/{name}_{rule}_{add}', dpi=200, bbox_inches='tight')

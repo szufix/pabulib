@@ -36,6 +36,18 @@ def mes_phragmen(instance, profile):
     )
 
 
+def mes_card_phragmen(instance, profile):
+    return completion_by_rule_combination(
+        instance,
+        profile,
+        [method_of_equal_shares, sequential_phragmen],
+        [
+            {"sat_class": Cardinality_Sat}, {}
+        ],
+    )
+
+
+
 
 
 
@@ -59,6 +71,8 @@ def compute_winners(instance, profile, method):
         winners_tmp = sequential_phragmen(instance_tmp, profile_tmp)
     elif method == 'mes_phragmen':
         winners_tmp = mes_phragmen(instance_tmp, profile_tmp)
+    elif method == 'mes_card_phragmen':
+        winners_tmp = mes_card_phragmen(instance_tmp, profile_tmp)
     else:
         winners_tmp = None
     return winners_tmp
@@ -142,3 +156,11 @@ def sort_by_indexes(lst, indexes, reverse=False):
   return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
           x[0], reverse=reverse)]
 
+def convert(value):
+    value /= 1000
+    if value > 1:
+        value = round(value, 0)
+        value = int(value)
+    else:
+        value = round(value, 1)
+    return f'{value}k'

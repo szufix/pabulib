@@ -16,10 +16,9 @@ nice_name = {
     'mes': 'MES',
     'greedy': "Greedy",
     'greedy_cost_sat': 'BasicAV',
-    'greedy_cardinality_sat': 'AV/Cost',
+    'greedy_cardinality_sat': 'AVoverCost',
     'phragmen': 'Phragmén',
     'mes_phragmen': 'MES (+Ph.)',
-    'mes_card_phragmen': 'MES-App (+Ph.)',
 
 
 
@@ -55,6 +54,43 @@ def import_values(region, name, method, limit=10, type=None):
 
     return costs, max_costs
 
+def import_values_game(region, name, method, limit=10, type=None, add=''):
+    name = name.replace('.pb', '')
+    path = f"margins/{type}/{region}/{name}_{method}_{add}.csv"
+
+    costs = {}
+    max_costs = {}
+    with open(path, 'r', newline='', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            id_ = str(row['id'])
+            cost = float(row['cost'])
+            max_cost = float(row['max_cost'])
+            costs[id_] = cost
+            max_costs[id_] = max_cost
+
+    return costs, max_costs
+
+def import_values_game2(region, name, method, r):
+    name = name.replace('.pb', '')
+    path = f"games/{region}/{name}_{method}_{r}.csv"
+
+    costs = {}
+    last_costs = {}
+    winners = {}
+    with open(path, 'r', newline='', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            id_ = str(row['id'])
+            cost = float(row['cost'])
+            last_cost = float(row['last_cost'])
+            winner = int(row['winner'])
+            costs[id_] = cost
+            last_costs[id_] = last_cost
+            winners[id_] = winner
+
+    return costs, last_costs, winners
+
 def sort_by_indexes(lst, indexes, reverse=False):
   return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
           x[0], reverse=reverse)]
@@ -68,9 +104,9 @@ def get_supporters(profile, c):
     return support
 
 
-def print_margin_plot(region, name, instance, profile,
+def print_margin_stats(region, name, instance, profile,
                               winning_costs, winning_max_costs,
-                              losing_costs, losing_max_costs, limit=1.):
+                              losing_costs, losing_max_costs, rule,):
     fig, ax = plt.subplots()
 
     support = []
@@ -91,90 +127,47 @@ def print_margin_plot(region, name, instance, profile,
 
     ordered_costs = sort_by_indexes(costs, support, True)
     ordered_max_costs = sort_by_indexes(max_costs, support, True)
-    ordered_winning = sort_by_indexes(winning, support, True)
-    ordered_support = sort_by_indexes(support, support, True)
 
-
-
-    # winning_pos = [i for i in range(len(winning_costs))]
-    # losing_pos = [i+len(winning_costs) for i in range(len(losing_costs))]
-
+    plus = []
+    minus = []
 
     for i in range(len(ordered_costs)):
-        if ordered_winning[i]:
-            # color = 'royalblue'
-            color = 'forestgreen'
-        else:
-            color = 'indianred'
+        diff = ordered_max_costs[i] - ordered_costs[i]
+        if diff > 0:
+            plus.append(diff)
+        elif diff < 0:
+            minus.append(diff)
 
-        if ordered_max_costs[i] > ordered_costs[i]:
-            plt.bar(i, ordered_costs[i], color=color, alpha=0.9)
-            plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
-        else:
-            plt.bar(i, ordered_max_costs[i], color=color, alpha=0.9)
+    plus = np.array(plus)
+    minus = np.array(minus)
+    line = f'${convert(np.mean(plus))} \pm {convert(np.std(plus))}$ & ' \
+           f'${convert(-np.mean(minus))} \pm {convert(np.std(minus))}$'
+    return line
 
-        plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
-
-
-    # for i in range(len(ordered_costs)):
-    #     if ordered_winning[i]:
-    #         color = 'royalblue'
-    #         alpha_1 = 0.9
-    #         alpha_2 = 0.5
-    #     else:
-    #         color = 'indianred'
-    #         alpha_1 = 0.5
-    #         alpha_2 = 0.9
-    #
-    #     plt.bar(i, ordered_max_costs[i], color=color, alpha=alpha_2)
-    #     plt.bar(i, ordered_costs[i], color=color, alpha=alpha_1)
-    #     plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
-        #
-        # plt.bar(str(ordered_support[i]), ordered_max_costs[i], color=color, alpha=alpha_2)
-        # plt.bar(str(ordered_support[i]), ordered_costs[i], color=color, alpha=alpha_1)
-        # plt.bar(str(ordered_support[i]), ordered_costs[i], fill=None, alpha=1, edgecolor='black')
-    print(region, instance.budget_limit)
-    plt.ylim([0, limit*int(instance.budget_limit)*1.02])
-
-    # ax.set_xticklabels([str(ordered_support[i]) for i in range(len(ordered_support))])
-    # ax.set_xticklabels(ordered_support)
-
-    # plt.locator_params(axis="x", nbins=10)
-    nbins = 8
-    step = int((len(ordered_support)-1)/nbins)
-    ticks = [i*step for i in range(nbins+1)]
-    labels = [ordered_support[i] for i in ticks]
-
-    scale_y = 1e6
-    ticks_y = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x / scale_y))
-    ax.yaxis.set_major_formatter(ticks_y)
-
-    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.xlabel('Number of votes', fontsize=20)
-    plt.ylabel('Cost (in millions)', fontsize=20)
-    # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
-    #           fontsize=20)
-    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=24)
-    name = name.replace('.pb', '')
-    plt.savefig(f'images/margins/{region}/{name}_{rule}', dpi=200, bbox_inches='tight')
-    # plt.show()
-
+NICE = {
+    'greedy_cost_sat': '\\textbasicAV',
+    'greedy_cardinality_sat': '\\textAVover',
+    'phragmen': '\Phragmen',
+    'mes_phragmen': '\Mes (+Ph.)',
+    'mes_card_phragmen': '\Mes-App (+Ph.)',
+}
 
 if __name__ == "__main__":
 
     rules = [
-        # 'greedy_cost_sat',
-        # 'greedy_cardinality_sat',
-        # 'phragmen',
-        # 'mes_phragmen',
-        'mes_card_phragmen'
+        'greedy_cost_sat',
+        'greedy_cardinality_sat',
+        'phragmen',
+        'mes_phragmen',
+        'mes_card_phragmen',
             ]
+
 
     if len(sys.argv) < 2:
         regions = [
+            'wieliczka_2023',
             # 'warszawa_2023',
-            'wieliczka_2023'
+
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -191,10 +184,28 @@ if __name__ == "__main__":
             print(name)
             for rule in rules:
 
+
+                # BASE
                 winning_costs, winning_max_costs = import_values(region, name, rule, type='winning')
                 losing_costs, losing_max_costs = import_values(region, name, rule, type='losing')
+
                 instance, profile = import_election(region, name)
 
-                print_margin_plot(region, name, instance, profile,
+                line_1 = print_margin_stats(region, name, instance, profile,
                                   winning_costs, winning_max_costs,
-                                  losing_costs, losing_max_costs, limit=0.15)
+                                  losing_costs, losing_max_costs, rule,
+                                   )
+                # GAME
+
+                winning_costs, winning_max_costs = import_values_game(region, name, rule, type='winning',  add='10000')
+                losing_costs, losing_max_costs = import_values_game(region, name, rule, type='losing',  add='10000')
+
+                instance, profile = import_election(region, name)
+
+                line_2 = print_margin_stats(region, name, instance, profile,
+                                  winning_costs, winning_max_costs,
+                                  losing_costs, losing_max_costs, rule,
+                                   )
+
+                line = f'& {NICE[rule]} & {line_1} & {line_2} \\\\'
+                print(line)
