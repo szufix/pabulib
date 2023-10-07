@@ -25,6 +25,17 @@ def mes_full(instance, profile):
     )
 
 
+def mes(instance, profile):
+    return completion_by_rule_combination(
+        instance,
+        profile,
+        [method_of_equal_shares, sequential_phragmen],
+        [
+            {"sat_class": Cost_Sat}, {}
+        ],
+    )
+
+
 def mes_phragmen(instance, profile):
     return completion_by_rule_combination(
         instance,
@@ -73,6 +84,8 @@ def compute_winners(instance, profile, method):
         winners_tmp = mes_phragmen(instance_tmp, profile_tmp)
     elif method == 'mes_card_phragmen':
         winners_tmp = mes_card_phragmen(instance_tmp, profile_tmp)
+    elif method == 'mes_card':
+        winners_tmp = method_of_equal_shares(instance_tmp, profile_tmp, sat_class=Cardinality_Sat)
     else:
         winners_tmp = None
     return winners_tmp
@@ -163,4 +176,5 @@ def convert(value):
         value = int(value)
     else:
         value = round(value, 1)
-    return f'{value}k'
+    # return f'{value}k'
+    return f'{value}'

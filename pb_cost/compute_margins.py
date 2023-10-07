@@ -234,6 +234,7 @@ if __name__ == "__main__":
             # 'krakow_2022',
             # 'warszawa_2023'
             # 'wieliczka_2023'
+            'amsterdam'
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -247,18 +248,16 @@ if __name__ == "__main__":
 
         for name in names:
             print(name)
-            # compute_winning_margins(region, name, 'greedy_cost_sat')
-            # compute_winning_margins(region, name, 'greedy_cardinality_sat')
-            # compute_winning_margins(region, name, 'phragmen')
-            # compute_winning_margins(region, name, 'mes_phragmen')
+            compute_winning_margins(region, name, 'greedy_cost_sat')
+            compute_winning_margins(region, name, 'greedy_cardinality_sat')
+            compute_winning_margins(region, name, 'phragmen')
+            compute_winning_margins(region, name, 'mes_phragmen')
             compute_winning_margins(region, name, 'mes_card_phragmen')
 
-            # compute_losing_margins(region, name, 'greedy_cost_sat')
-            # compute_losing_margins(region, name, 'greedy_cardinality_sat')
-            # compute_losing_margins(region, name, 'phragmen')
-            # compute_losing_margins(region, name, 'mes_phragmen')
+            compute_losing_margins(region, name, 'greedy_cost_sat')
+            compute_losing_margins(region, name, 'greedy_cardinality_sat')
+            compute_losing_margins(region, name, 'phragmen')
+            compute_losing_margins(region, name, 'mes_phragmen')
             compute_losing_margins(region, name, 'mes_card_phragmen')
-
-            # test_budgets(region, name)
 
 

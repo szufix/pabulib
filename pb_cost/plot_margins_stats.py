@@ -13,13 +13,14 @@ from scipy import stats
 import matplotlib.ticker as ticker
 
 nice_name = {
+
     'mes': 'MES',
     'greedy': "Greedy",
     'greedy_cost_sat': 'BasicAV',
-    'greedy_cardinality_sat': 'AVoverCost',
+    'greedy_cardinality_sat': 'AV/Cost',
     'phragmen': 'Phragmén',
-    'mes_phragmen': 'MES (+Ph.)',
-
+    'mes_phragmen': 'MES-Cost/Ph',
+    'mes_card_phragmen': 'MES-Apr/Ph',
 
 
     'warszawa_2021': 'Warsaw 2021',
@@ -148,9 +149,10 @@ NICE = {
     'greedy_cost_sat': '\\textbasicAV',
     'greedy_cardinality_sat': '\\textAVover',
     'phragmen': '\Phragmen',
-    'mes_phragmen': '\Mes (+Ph.)',
-    'mes_card_phragmen': '\Mes-App (+Ph.)',
+    'mes_card_phragmen': '\\MESAP',
+    'mes_phragmen':  '\\MESP',
 }
+
 
 if __name__ == "__main__":
 
@@ -158,16 +160,16 @@ if __name__ == "__main__":
         'greedy_cost_sat',
         'greedy_cardinality_sat',
         'phragmen',
-        'mes_phragmen',
         'mes_card_phragmen',
+        'mes_phragmen',
             ]
 
 
     if len(sys.argv) < 2:
         regions = [
-            'wieliczka_2023',
+            # 'wieliczka_2023',
             # 'warszawa_2023',
-
+            'amsterdam',
         ]
     else:
         regions = [str(sys.argv[1])]

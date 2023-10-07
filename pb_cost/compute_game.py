@@ -237,7 +237,7 @@ if __name__ == "__main__":
         regions = [str(sys.argv[1])]
     else:
         regions = [
-            'warszawa_2023'
+            'amsterdam'
         ]
 
     for region in regions:
@@ -251,9 +251,8 @@ if __name__ == "__main__":
         for name in names:
             print(name)
 
-            # compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
+            compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'greedy_cardinality_sat', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'phragmen', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'mes_phragmen', num_rounds=num_rounds)
-
-            compute_iterative_game(region, name, 'mes_card_phragmen', num_rounds=num_rounds)
+            # compute_iterative_game(region, name, 'mes_card_phragmen', num_rounds=num_rounds)

@@ -270,10 +270,8 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         regions = [
-            # 'krakow_2020',
-            # 'krakow_2021',
-            # 'krakow_2022',
-            'warszawa_2023'
+            # 'warszawa_2023'
+            'amsterdam'
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -290,15 +288,15 @@ if __name__ == "__main__":
 
             add = '10000'
 
-            # compute_winning_margins_for_game(region, name, 'greedy_cost_sat', add)
-            # compute_winning_margins_for_game(region, name, 'greedy_cardinality_sat', add)
-            # compute_winning_margins_for_game(region, name, 'phragmen', add)
-            # compute_winning_margins_for_game(region, name, 'mes_phragmen', add)
+            compute_winning_margins_for_game(region, name, 'greedy_cost_sat', add)
+            compute_winning_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            compute_winning_margins_for_game(region, name, 'phragmen', add)
+            compute_winning_margins_for_game(region, name, 'mes_phragmen', add)
             compute_winning_margins_for_game(region, name, 'mes_card_phragmen', add)
 
-            # compute_losing_margins_for_game(region, name, 'greedy_cost_sat', add)
-            # compute_losing_margins_for_game(region, name, 'greedy_cardinality_sat', add)
-            # compute_losing_margins_for_game(region, name, 'phragmen', add)
-            # compute_losing_margins_for_game(region, name, 'mes_phragmen', add)
+            compute_losing_margins_for_game(region, name, 'greedy_cost_sat', add)
+            compute_losing_margins_for_game(region, name, 'greedy_cardinality_sat', add)
+            compute_losing_margins_for_game(region, name, 'phragmen', add)
+            compute_losing_margins_for_game(region, name, 'mes_phragmen', add)
             compute_losing_margins_for_game(region, name, 'mes_card_phragmen', add)
 

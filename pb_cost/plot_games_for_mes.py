@@ -101,8 +101,8 @@ nice_name = {
     'greedy_cost_sat': 'BasicAV',
     'greedy_cardinality_sat': 'AV/Cost',
     'phragmen': 'Phragmén',
-    'mes_phragmen': 'MES (+Ph.)',
-    'mes_card_phragmen': 'MES-App (+Ph.)',
+    'mes_phragmen': 'MES-Cost/Ph',
+    'mes_card_phragmen': 'MES-Apr/Ph',
 
 
 
@@ -144,7 +144,7 @@ def import_values(region, name, method, r):
 
 def print_game_plot(region, name, instance, profile, _costs, _last_costs,
                     _original_winners, _winners, r, _eq_costs, limit=1.):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     support = []
     costs = []
@@ -222,13 +222,13 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
     ticks_y = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x / scale_y))
     ax.yaxis.set_major_formatter(ticks_y)
 
-    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.xlabel('Number of votes', fontsize=20)
-    plt.ylabel('Cost (in millions)', fontsize=20)
+    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.xlabel('Number of votes', fontsize=24)
+    plt.ylabel('Cost (in millions)', fontsize=24)
     # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
     #           fontsize=20)
-    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=24)
+    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=28)
     name = name.replace('.pb', '')
     plt.savefig(f'images/games/{region}/{name}_{rule}_{r}', dpi=200, bbox_inches='tight')
     plt.close()
@@ -239,7 +239,7 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
 
 def print_game_plot_with_none(region, name, instance, profile, _costs, _last_costs,
                     _original_winners, _winners, r, limit=1.):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     support = []
     costs = []
@@ -312,13 +312,13 @@ def print_game_plot_with_none(region, name, instance, profile, _costs, _last_cos
     ticks_y = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x / scale_y))
     ax.yaxis.set_major_formatter(ticks_y)
 
-    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.xlabel('Number of votes', fontsize=20)
-    plt.ylabel('Cost (in millions)', fontsize=20)
+    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.xlabel('Number of votes', fontsize=24)
+    plt.ylabel('Cost (in millions)', fontsize=24)
     # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
     #           fontsize=20)
-    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=24)
+    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=28)
     name = name.replace('.pb', '')
     plt.savefig(f'images/games/{region}/{name}_{rule}_{r}', dpi=200, bbox_inches='tight')
     plt.close()
@@ -330,10 +330,10 @@ if __name__ == "__main__":
     num_rounds = 10000
 
     rules = [
-        # 'greedy_cost_sat',
-        # 'greedy_cardinality_sat',
-        # 'phragmen',
-        # 'mes_phragmen',
+        'greedy_cost_sat',
+        'greedy_cardinality_sat',
+        'phragmen',
+        'mes_phragmen',
         'mes_card_phragmen',
             ]
 
@@ -341,6 +341,7 @@ if __name__ == "__main__":
         regions = [
             'warszawa_2023',
             # 'wieliczka_2023'
+            # 'amsterdam'
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -386,17 +387,17 @@ if __name__ == "__main__":
                         if eq_costs is None:
                             print_game_plot_with_none(region, name, instance, profile,
                                             costs, last_costs, original_winners, winners, r,
-                                            # limit=0.15
-                                            # limit=0.45
-                                            limit=0.6
+                                            # limit=0.25
+                                            # limit=0.18
+                                            limit = 0.21
                                             )
                         else:
                             print_game_plot(region, name, instance, profile,
                                               costs, last_costs, original_winners, winners, r,
                                             eq_costs,
-                                            # limit=0.15
-                                            # limit=0.45
-                                            limit=0.6
+                                            # limit=0.25
+                                            # limit=0.18
+                                            limit = 0.21
                                             )
 
                     break

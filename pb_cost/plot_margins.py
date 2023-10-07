@@ -18,9 +18,8 @@ nice_name = {
     'greedy_cost_sat': 'BasicAV',
     'greedy_cardinality_sat': 'AV/Cost',
     'phragmen': 'Phragmén',
-    'mes_phragmen': 'MES (+Ph.)',
-    'mes_card_phragmen': 'MES-App (+Ph.)',
-
+    'mes_phragmen': 'MES-Cost/Ph',
+    'mes_card_phragmen': 'MES-Apr/Ph',
 
 
     'warszawa_2021': 'Warsaw 2021',
@@ -71,7 +70,8 @@ def get_supporters(profile, c):
 def print_margin_plot(region, name, instance, profile,
                               winning_costs, winning_max_costs,
                               losing_costs, losing_max_costs, limit=1.):
-    fig, ax = plt.subplots()
+
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     support = []
     costs = []
@@ -149,13 +149,13 @@ def print_margin_plot(region, name, instance, profile,
     ticks_y = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x / scale_y))
     ax.yaxis.set_major_formatter(ticks_y)
 
-    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.xlabel('Number of votes', fontsize=20)
-    plt.ylabel('Cost (in millions)', fontsize=20)
+    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.xlabel('Number of votes', fontsize=24)
+    plt.ylabel('Cost (in millions)', fontsize=24)
     # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
     #           fontsize=20)
-    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=24)
+    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=28)
     name = name.replace('.pb', '')
     plt.savefig(f'images/margins/{region}/{name}_{rule}', dpi=200, bbox_inches='tight')
     # plt.show()
@@ -164,17 +164,18 @@ def print_margin_plot(region, name, instance, profile,
 if __name__ == "__main__":
 
     rules = [
-        # 'greedy_cost_sat',
-        # 'greedy_cardinality_sat',
-        # 'phragmen',
-        # 'mes_phragmen',
+        'greedy_cost_sat',
+        'greedy_cardinality_sat',
+        'phragmen',
+        'mes_phragmen',
         'mes_card_phragmen'
             ]
 
     if len(sys.argv) < 2:
         regions = [
-            # 'warszawa_2023',
-            'wieliczka_2023'
+            'warszawa_2023',
+            # 'wieliczka_2023',
+            # 'amsterdam'
         ]
     else:
         regions = [str(sys.argv[1])]
@@ -197,4 +198,8 @@ if __name__ == "__main__":
 
                 print_margin_plot(region, name, instance, profile,
                                   winning_costs, winning_max_costs,
-                                  losing_costs, losing_max_costs, limit=0.15)
+                                  losing_costs, losing_max_costs,
+                                  # limit=0.25
+                                  # limit=0.18
+                                  limit=0.21
+                                  )

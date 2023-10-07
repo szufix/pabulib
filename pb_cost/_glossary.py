@@ -2,6 +2,50 @@
 
 NAMES = {}
 
+
+NAMES['amsterdam'] = {
+    '166.pb':'Kleine Wereld',
+# '179.pb':'',
+# '212.pb':'',
+# '252.pb':'',
+# '267.pb':'',
+# '285.pb':'',
+# '287.pb':'',
+# '288.pb':'',
+# '289.pb':'',
+# '304.pb':'',
+# '309.pb':'',
+# '324.pb':'',
+# '332.pb':'',
+# '335.pb':'',
+# '358.pb':'',
+# '417.pb':'',
+# '489.pb':'',
+# '490.pb':'',
+# '491.pb':'',
+# '492.pb':'',
+# '509.pb':'',
+# '515.pb':'',
+# '522.pb':'',
+# '523.pb':'',
+# '524.pb':'',
+# '525.pb':'',
+# '588.pb':'',
+# '604.pb':'',
+# '605.pb':'',
+# '613.pb':'',
+# '619.pb':'',
+# '621.pb':'',
+# '622.pb':'',
+# '628.pb':'',
+# '631.pb':'',
+# '643.pb':'',
+# '644.pb':'',
+# '645.pb':'',
+# '646.pb':'',
+# '647.pb':'',
+}
+
 NAMES['poznan_2023'] = {
     # 'poland_poznan_2023.pb' : '',
     # 'poland_poznan_2023_I.pb': '',
@@ -21,10 +65,9 @@ NAMES['poznan_2023'] = {
 }
 
 # WARSZAWA
-
 NAMES['warszawa_2023'] = {
-    # 'poland_warszawa_2023_bemowo.pb': 'Bemowo',
-    # 'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
+    'poland_warszawa_2023_bemowo.pb': 'Bemowo',
+    'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
     # 'poland_warszawa_2023_bielany.pb': 'Bielany',
     # 'poland_warszawa_2023_mokotow.pb': 'Mokotow',
     # 'poland_warszawa_2023_ochota.pb': 'Ochota',
@@ -37,11 +80,12 @@ NAMES['warszawa_2023'] = {
     # 'poland_warszawa_2023_ursynow.pb': 'Ursynow',
     # 'poland_warszawa_2023_wawer.pb': 'Wawer',
     'poland_warszawa_2023_wesola.pb': 'Wesola',
-    # 'poland_warszawa_2023_wilanow.pb': 'Wilanow',
-    # 'poland_warszawa_2023_wlochy.pb': 'Wlochy',
+    'poland_warszawa_2023_wilanow.pb': 'Wilanow',
+    'poland_warszawa_2023_wlochy.pb': 'Wlochy',
     # 'poland_warszawa_2023_wola.pb': 'Wola',
     # 'poland_warszawa_2023_zoliborz.pb': 'Zoliborz',
 }
+
 
 NAMES['warszawa_2022'] = {
     'poland_warszawa_2022_bemowo.pb': 'Bemowo',

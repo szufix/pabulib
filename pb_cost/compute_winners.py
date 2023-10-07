@@ -10,10 +10,6 @@ from _utils import *
 
 
 def get_max_cost(region, budget):
-    # if region in ['krakow_2020', 'krakow_2021', 'krakow_2022']:
-    #     return budget*0.4
-    # elif region in ['warszawa_2020', 'warszawa_2021', 'warszawa_2022', 'warszawa_2023']:
-    #     return budget*0.2
     return budget
 
 
@@ -231,12 +227,15 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
 if __name__ == "__main__":
 
+    method = 'mes_card_phragmen'
+    # method = 'mes_card'
+    solo = []
 
     if len(sys.argv) >= 2:
         regions = [str(sys.argv[1])]
     else:
         regions = [
-            'lublin_2020'
+            'warszawa_2023'
         ]
 
     for region in regions:
@@ -250,3 +249,15 @@ if __name__ == "__main__":
             print(name)
 
             compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=1)
+
+            instance, profile = import_election(region, name)
+
+            results = {p.name: {'cost': p.cost, 'winner': 0} for p in instance}
+
+            winners_default = compute_winners(instance, profile, method)
+
+            solo.append(len(winners_default))
+
+    print(solo)
+
+#     [55, 33, 55, 50, 41, 37, 39, 18, 32, 46, 40, 42, 41, 19, 18, 29, 41, 22]
