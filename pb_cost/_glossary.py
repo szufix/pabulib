@@ -67,8 +67,8 @@ NAMES['poznan_2023'] = {
 # WARSZAWA
 NAMES['warszawa_2023'] = {
     'poland_warszawa_2023_bemowo.pb': 'Bemowo',
-    'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
-    # 'poland_warszawa_2023_bielany.pb': 'Bielany',
+    # 'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
+    'poland_warszawa_2023_bielany.pb': 'Bielany',
     # 'poland_warszawa_2023_mokotow.pb': 'Mokotow',
     # 'poland_warszawa_2023_ochota.pb': 'Ochota',
     # 'poland_warszawa_2023_praga-polnoc.pb': 'Praga-Polnoc',
