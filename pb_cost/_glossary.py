@@ -66,9 +66,9 @@ NAMES['poznan_2023'] = {
 
 # WARSZAWA
 NAMES['warszawa_2023'] = {
-    'poland_warszawa_2023_bemowo.pb': 'Bemowo',
+    # 'poland_warszawa_2023_bemowo.pb': 'Bemowo',
     # 'poland_warszawa_2023_bialoleka.pb': 'Bialoleka',
-    'poland_warszawa_2023_bielany.pb': 'Bielany',
+    # 'poland_warszawa_2023_bielany.pb': 'Bielany',
     # 'poland_warszawa_2023_mokotow.pb': 'Mokotow',
     # 'poland_warszawa_2023_ochota.pb': 'Ochota',
     # 'poland_warszawa_2023_praga-polnoc.pb': 'Praga-Polnoc',
@@ -80,8 +80,8 @@ NAMES['warszawa_2023'] = {
     # 'poland_warszawa_2023_ursynow.pb': 'Ursynow',
     # 'poland_warszawa_2023_wawer.pb': 'Wawer',
     'poland_warszawa_2023_wesola.pb': 'Wesola',
-    'poland_warszawa_2023_wilanow.pb': 'Wilanow',
-    'poland_warszawa_2023_wlochy.pb': 'Wlochy',
+    # 'poland_warszawa_2023_wilanow.pb': 'Wilanow',
+    # 'poland_warszawa_2023_wlochy.pb': 'Wlochy',
     # 'poland_warszawa_2023_wola.pb': 'Wola',
     # 'poland_warszawa_2023_zoliborz.pb': 'Zoliborz',
 }

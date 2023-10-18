@@ -231,13 +231,13 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
 if __name__ == "__main__":
 
-    num_rounds = 10000
+    num_rounds = 1000
 
     if len(sys.argv) >= 2:
         regions = [str(sys.argv[1])]
     else:
         regions = [
-            'amsterdam'
+            'warszawa_2023'
         ]
 
     for region in regions:
@@ -247,12 +247,12 @@ if __name__ == "__main__":
         else:
             names = NAMES[region]
 
-
         for name in names:
             print(name)
 
-            compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
+            # compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'greedy_cardinality_sat', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'phragmen', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'mes_phragmen', num_rounds=num_rounds)
             # compute_iterative_game(region, name, 'mes_card_phragmen', num_rounds=num_rounds)
+            compute_iterative_game(region, name, 'mtc', num_rounds=num_rounds)

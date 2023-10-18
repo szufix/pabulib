@@ -164,11 +164,12 @@ def print_margin_plot(region, name, instance, profile,
 if __name__ == "__main__":
 
     rules = [
-        'greedy_cost_sat',
-        'greedy_cardinality_sat',
-        'phragmen',
-        'mes_phragmen',
-        'mes_card_phragmen'
+        # 'greedy_cost_sat',
+        # 'greedy_cardinality_sat',
+        # 'phragmen',
+        # 'mes_phragmen',
+        # 'mes_card_phragmen'
+        'mtc'
             ]
 
     if len(sys.argv) < 2:
@@ -199,7 +200,7 @@ if __name__ == "__main__":
                 print_margin_plot(region, name, instance, profile,
                                   winning_costs, winning_max_costs,
                                   losing_costs, losing_max_costs,
-                                  # limit=0.25
+                                  limit=0.25
                                   # limit=0.18
-                                  limit=0.21
+                                  # limit=0.21
                                   )

@@ -8,6 +8,8 @@ from pabutools.rules import completion_by_rule_combination
 from pabutools.rules import exhaustion_by_budget_increase
 from pabutools.rules import greedy_utilitarian_welfare, method_of_equal_shares, sequential_phragmen
 
+from cstv import compute_MTC
+
 
 def mes_full(instance, profile):
     return completion_by_rule_combination(
@@ -86,6 +88,8 @@ def compute_winners(instance, profile, method):
         winners_tmp = mes_card_phragmen(instance_tmp, profile_tmp)
     elif method == 'mes_card':
         winners_tmp = method_of_equal_shares(instance_tmp, profile_tmp, sat_class=Cardinality_Sat)
+    elif method == 'mtc':
+        winners_tmp = compute_MTC(instance_tmp, profile_tmp)
     else:
         winners_tmp = None
     return winners_tmp

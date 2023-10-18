@@ -327,14 +327,15 @@ def print_game_plot_with_none(region, name, instance, profile, _costs, _last_cos
 
 if __name__ == "__main__":
 
-    num_rounds = 10000
+    num_rounds = 200
 
     rules = [
-        'greedy_cost_sat',
-        'greedy_cardinality_sat',
-        'phragmen',
-        'mes_phragmen',
-        'mes_card_phragmen',
+        # 'greedy_cost_sat',
+        # 'greedy_cardinality_sat',
+        # 'phragmen',
+        # 'mes_phragmen',
+        # 'mes_card_phragmen',
+        'mtc',
             ]
 
     if len(sys.argv) < 2:
@@ -369,7 +370,7 @@ if __name__ == "__main__":
 
                 for r in tqdm(range(num_rounds+1)):
 
-                    r = 10000
+                    r = num_rounds
 
                     if r % 10 == 0:
 
@@ -387,19 +388,17 @@ if __name__ == "__main__":
                         if eq_costs is None:
                             print_game_plot_with_none(region, name, instance, profile,
                                             costs, last_costs, original_winners, winners, r,
-                                            # limit=0.25
+                                            limit=0.25
                                             # limit=0.18
-                                            limit = 0.21
+                                            # limit = 0.21
                                             )
                         else:
                             print_game_plot(region, name, instance, profile,
                                               costs, last_costs, original_winners, winners, r,
                                             eq_costs,
-                                            # limit=0.25
+                                            limit=0.25
                                             # limit=0.18
-                                            limit = 0.21
+                                            # limit = 0.21
                                             )
 
                     break
-
-# 70217

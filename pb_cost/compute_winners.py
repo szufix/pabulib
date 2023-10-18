@@ -227,8 +227,10 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
 if __name__ == "__main__":
 
-    method = 'mes_card_phragmen'
+    # method = 'mes_card_phragmen'
     # method = 'mes_card'
+    method = 'mtc'
+
     solo = []
 
     if len(sys.argv) >= 2:
@@ -248,16 +250,16 @@ if __name__ == "__main__":
         for name in names:
             print(name)
 
-            compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=1)
+            # compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=1)
 
             instance, profile = import_election(region, name)
 
             results = {p.name: {'cost': p.cost, 'winner': 0} for p in instance}
 
-            winners_default = compute_winners(instance, profile, method)
+            winners_default_1 = compute_winners(instance, profile, 'mes_phragmen')
 
-            solo.append(len(winners_default))
+            winners_default_2 = compute_winners(instance, profile, method)
 
-    print(solo)
 
-#     [55, 33, 55, 50, 41, 37, 39, 18, 32, 46, 40, 42, 41, 19, 18, 29, 41, 22]
+
+

@@ -1,6 +1,7 @@
 import csv
 import os
 
+from matplotlib import ticker
 from tqdm import tqdm
 
 from _glossary import NAMES
@@ -41,7 +42,7 @@ def get_name(region):
 
 def import_values(region, name, method, r):
     name = name.replace('.pb', '')
-    path = f"games/{region}/{name}_{method}_{r}.csv"
+    path = f"games/{region}_past/{name}_{method}_{r}.csv"
 
     costs = {}
     last_costs = {}
@@ -60,15 +61,95 @@ def import_values(region, name, method, r):
     return costs, last_costs, winners
 
 
+def compute_analytical_equilibrium_of_greedy_cost_sat(region, name):
+
+    instance, profile = import_election(region, name)
+
+    supporters = {}
+    for p in instance:
+        supporters[p] = get_supporters(profile, p)
+
+    last_costs = {}
+    for p in instance:
+        if supporters[p] == max(supporters.values()):
+            last_costs[p] = instance.budget_limit
+        else:
+            last_costs[p] = 0
+
+    return last_costs
+
+
+def compute_analytical_equilibrium_of_greedy_cardinality_sat(region, name):
+
+    instance, profile = import_election(region, name)
+
+    total_support = get_total_support(profile)
+
+    last_costs = {p.name: instance.budget_limit * get_supporters(profile, p)/ total_support for p in instance}
+
+    return last_costs
+
+
+def compute_analytical_equilibrium_of_mes(region, name):
+
+    instance, profile = import_election(region, name)
+
+    money_unit = float(instance.budget_limit / len(profile))
+
+    support = []
+    projects = []
+    for c in instance:
+        support.append(get_supporters(profile, c))
+        projects.append(c)
+    ordered_projects = sort_by_indexes(projects, support, True)
+
+    last_costs = {p.name: 0 for p in instance}
+
+    q = 1
+    while True:
+        print(q)
+        q = q+1
+
+        p = ordered_projects[0]
+
+        last_cost = 0
+
+        for i, v in enumerate(profile):
+
+            if p.name in v:
+                last_cost += money_unit
+                v.clear()
+
+        # recount the votes
+        support = []
+        projects = []
+        for c in instance:
+            support.append(get_supporters(profile, c))
+            projects.append(c)
+        ordered_projects = sort_by_indexes(projects, support, True)
+
+        last_costs[p.name] = last_cost
+
+        print(p.name, last_cost, p.cost)
+        # print(sum(support))
+
+        if sum(support) == 0:
+            break
+
+
+    return last_costs
+
+
 def print_game_plot(region, name, instance, profile, _costs, _last_costs,
-                    _original_winners, _winners, r):
-    fig, ax = plt.subplots()
+                    _original_winners, _winners, r, _eq_costs, limit=1.):
+    fig, ax = plt.subplots(figsize=(8, 4))
 
     support = []
     costs = []
     last_costs = []
     winners = []
     original_winners = []
+    eq_costs = []
 
     for c in instance:
         support.append(get_supporters(profile, c))
@@ -76,19 +157,27 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
         original_winners.append(_original_winners[c.name])
         costs.append(_costs[c.name])
         last_costs.append(_last_costs[c.name])
+        eq_costs.append(_eq_costs[c.name])
 
     ordered_costs = sort_by_indexes(costs, support, True)
     ordered_max_costs = sort_by_indexes(last_costs, support, True)
     ordered_winners = sort_by_indexes(winners, support, True)
     ordered_original_winners = sort_by_indexes(original_winners, support, True)
+    ordered_eq_costs = sort_by_indexes(eq_costs, support, True)
     ordered_support = sort_by_indexes(support, support, True)
+
+
+    msize = int(280/len(ordered_costs))**2
+
+    tshift = instance.budget_limit * (-0.0005 + int(280/len(ordered_costs))/2000)
 
     # winning_pos = [i for i in range(len(winning_costs))]
     # losing_pos = [i+len(winning_costs) for i in range(len(losing_costs))]
 
     for i in range(len(ordered_costs)):
         if ordered_winners[i]:
-            color = 'royalblue'
+            # color = 'royalblue'
+            color = 'forestgreen'
         else:
             color = 'indianred'
 
@@ -99,10 +188,16 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
             plt.bar(i, ordered_max_costs[i], color=color, alpha=0.9)
 
         plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
-        # plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
-        # plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
+
         if ordered_original_winners[i]:
-            plt.plot(i, ordered_costs[i], marker="D", linestyle="", alpha=1, color="black")
+            plt.scatter(i, ordered_costs[i]+tshift, marker="^", alpha=1, color="black", s=msize)
+            # plt.scatter(i, -10000, marker="x", alpha=1, color="black", s=8)
+
+        # plt.scatter(i, ordered_eq_costs[i], marker="o", alpha=1, color="violet", s=msize)
+        plt.scatter(i, ordered_eq_costs[i], marker="o", alpha=1, color="peru", s=msize)
+        plt.scatter(i, ordered_eq_costs[i], marker="o", alpha=1, color="black", s=msize/16)
+
+
         # plt.bar(i, ordered_costs[i], color=color, alpha=alpha_1)
         #
         # plt.bar(str(ordered_support[i]), ordered_max_costs[i], color=color, alpha=alpha_2)
@@ -110,7 +205,7 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
         # plt.bar(str(ordered_support[i]), ordered_costs[i], fill=None, alpha=1, edgecolor='black')
 
     MAX_COST = int(instance.budget_limit)
-    plt.ylim([0, 0.25*MAX_COST*1.02])
+    plt.ylim([0, limit*MAX_COST*1.02])
 
     # ax.set_xticklabels([str(ordered_support[i]) for i in range(len(ordered_support))])
     # ax.set_xticklabels(ordered_support)
@@ -121,28 +216,106 @@ def print_game_plot(region, name, instance, profile, _costs, _last_costs,
     ticks = [i*step for i in range(nbins+1)]
     labels = [ordered_support[i] for i in ticks]
 
-    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
-    plt.yticks(fontsize=14)
-    plt.xlabel(get_name(region), fontsize=18)
-    plt.ylabel('Cost', fontsize=18)
-    plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
-              fontsize=16)
+    scale_y = 1e6
+    ticks_y = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x / scale_y))
+    ax.yaxis.set_major_formatter(ticks_y)
+
+    plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=18)
+    plt.yticks(fontsize=18)
+    plt.xlabel('Number of votes', fontsize=24)
+    plt.ylabel('Cost (in millions)', fontsize=24)
+    # plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
+    #           fontsize=20)
+    plt.title(f'{nice_name.get(rule, rule)} | {NAMES[region][name]}', fontsize=28)
     name = name.replace('.pb', '')
     plt.savefig(f'images/games/{region}/{name}_{rule}_{r}', dpi=200, bbox_inches='tight')
     plt.close()
     # plt.show()
 
+# def print_game_plot(region, name, instance, profile, _costs, _last_costs,
+#                     _original_winners, _winners, r):
+#     fig, ax = plt.subplots()
+#
+#     support = []
+#     costs = []
+#     last_costs = []
+#     winners = []
+#     original_winners = []
+#
+#     for c in instance:
+#         support.append(get_supporters(profile, c))
+#         winners.append(_winners[c.name])
+#         original_winners.append(_original_winners[c.name])
+#         costs.append(_costs[c.name])
+#         last_costs.append(_last_costs[c.name])
+#
+#     ordered_costs = sort_by_indexes(costs, support, True)
+#     ordered_max_costs = sort_by_indexes(last_costs, support, True)
+#     ordered_winners = sort_by_indexes(winners, support, True)
+#     ordered_original_winners = sort_by_indexes(original_winners, support, True)
+#     ordered_support = sort_by_indexes(support, support, True)
+#
+#     # winning_pos = [i for i in range(len(winning_costs))]
+#     # losing_pos = [i+len(winning_costs) for i in range(len(losing_costs))]
+#
+#     for i in range(len(ordered_costs)):
+#         if ordered_winners[i]:
+#             color = 'royalblue'
+#         else:
+#             color = 'indianred'
+#
+#         if ordered_max_costs[i] > ordered_costs[i]:
+#             plt.bar(i, ordered_costs[i], color=color, alpha=0.9)
+#             plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
+#         else:
+#             plt.bar(i, ordered_max_costs[i], color=color, alpha=0.9)
+#
+#         plt.bar(i, ordered_costs[i], fill=None, alpha=1, edgecolor='black')
+#         # plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
+#         # plt.bar(i, ordered_max_costs[i], color=color, alpha=0.5)
+#         if ordered_original_winners[i]:
+#             plt.plot(i, ordered_costs[i], marker="D", linestyle="", alpha=1, color="black")
+#         # plt.bar(i, ordered_costs[i], color=color, alpha=alpha_1)
+#         #
+#         # plt.bar(str(ordered_support[i]), ordered_max_costs[i], color=color, alpha=alpha_2)
+#         # plt.bar(str(ordered_support[i]), ordered_costs[i], color=color, alpha=alpha_1)
+#         # plt.bar(str(ordered_support[i]), ordered_costs[i], fill=None, alpha=1, edgecolor='black')
+#
+#     MAX_COST = int(instance.budget_limit)
+#     plt.ylim([0, 0.25*MAX_COST*1.02])
+#
+#     # ax.set_xticklabels([str(ordered_support[i]) for i in range(len(ordered_support))])
+#     # ax.set_xticklabels(ordered_support)
+#
+#     # plt.locator_params(axis="x", nbins=10)
+#     nbins = 8
+#     step = int((len(ordered_support)-1)/nbins)
+#     ticks = [i*step for i in range(nbins+1)]
+#     labels = [ordered_support[i] for i in ticks]
+#
+#     plt.xticks(ticks=ticks, labels=labels, rotation=90, fontsize=14)
+#     plt.yticks(fontsize=14)
+#     plt.xlabel(get_name(region), fontsize=18)
+#     plt.ylabel('Cost', fontsize=18)
+#     plt.title(f'{nice_name.get(rule, rule)} ({nice_name.get(region, region)} | {NAMES[region][name]})',
+#               fontsize=16)
+#     name = name.replace('.pb', '')
+#     plt.savefig(f'images/games/{region}/{name}_{rule}_{r}', dpi=200, bbox_inches='tight')
+#     plt.close()
+#     # plt.show()
+
 
 
 if __name__ == "__main__":
 
-    num_rounds = 10000
+    num_rounds = 1000
 
     rules = [
-        'greedy_cost_sat',
-        'greedy_cardinality_sat',
-        'phragmen',
+        # 'greedy_cost_sat',
+        # 'greedy_cardinality_sat',
+        # 'phragmen',
         # 'mes_phragmen',
+        'mtc'
             ]
 
     if len(sys.argv) < 2:
@@ -151,9 +324,6 @@ if __name__ == "__main__":
             # 'warszawa_2022',
             # 'warszawa_2021',
 
-            # 'krakow_2022',
-            # 'krakow_2021',
-            # 'krakow_2020',
             # 'wieliczka_2023'
         ]
     else:
@@ -180,12 +350,34 @@ if __name__ == "__main__":
                     else:
                         original_winners[p.name] = 0
 
+                if rule == 'mes_phragmen':
+                    eq_costs = compute_analytical_equilibrium_of_mes(region, name)
+                elif rule == 'greedy_cardinality_sat':
+                    eq_costs = compute_analytical_equilibrium_of_greedy_cardinality_sat(region,
+                                                                                        name)
+                elif rule == 'greedy_cost_sat':
+                    eq_costs = compute_analytical_equilibrium_of_greedy_cost_sat(region, name)
+                else:
+                    eq_costs = None
+
                 for r in tqdm(range(num_rounds+1)):
-                    r=10000
+
+                    # r = 10000
+
                     if r % 10 == 0:
 
                         costs, last_costs, winners = import_values(region, name, rule, r)
 
-                        print_game_plot(region, name, instance, profile,
-                                          costs, last_costs, original_winners, winners, r)
-                    break
+                        if eq_costs is None:
+                            pass
+                        else:
+                            print_game_plot(region, name, instance, profile,
+                                              costs, last_costs, original_winners, winners, r,
+                                            eq_costs,
+                                            limit=0.25
+                                            # limit=0.18
+                                            # limit = 0.21
+                                            )
+
+                    # break
+
