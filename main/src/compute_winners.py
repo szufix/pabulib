@@ -1,45 +1,15 @@
 import os
 import sys
+import csv
 
 import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
-from _glossary import *
-from _utils import *
+from ._glossary import *
+from .utils import *
+from .rules import *
 
-
-def get_max_cost(region, budget):
-    # if region in ['krakow_2020', 'krakow_2021', 'krakow_2022']:
-    #     return budget*0.4
-    # elif region in ['warszawa_2020', 'warszawa_2021', 'warszawa_2022', 'warszawa_2023']:
-    #     return budget*0.2
-    return budget
-
-
-def import_data(path):
-    meta = {}
-    projects = {}
-    votes = {}
-    with open(path, 'r', newline='', encoding="utf-8") as csvfile:
-        section = ""
-        header = []
-        reader = csv.reader(csvfile, delimiter=';')
-        for row in reader:
-            if str(row[0]).strip().lower() in ["meta", "projects", "votes"]:
-                section = str(row[0]).strip().lower()
-                header = next(reader)
-            elif section == "meta":
-                meta[row[0]] = row[1].strip()
-            elif section == "projects":
-                projects[row[0]] = {}
-                for it, key in enumerate(header[1:]):
-                    projects[row[0]][key.strip()] = row[it + 1].strip()
-            elif section == "votes":
-                votes[row[0]] = {}
-                for it, key in enumerate(header[1:]):
-                    votes[row[0]][key.strip()] = row[it + 1].strip()
-    return meta, projects, votes
 
 
 def jaccard_distance(ac1, ac2):
@@ -110,7 +80,7 @@ def import_original_winners(projects):
 def convert_winners(winners):
     new_winners = set()
     for w in winners:
-        new_winners.add(w.id)
+        new_winners.add(w.idx)
     return new_winners
 
 
@@ -126,7 +96,7 @@ def _store_game_results_in_csv(region, name, method, results, add=''):
     path = os.path.join(os.getcwd(), "games", region, f'{name}_{method}_{add}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        writer.writerow(["id", "cost", "last_cost", "winner"])
+        writer.writerow(["idx", "cost", "last_cost", "winner"])
 
         for r in results:
             writer.writerow([r,
@@ -163,7 +133,7 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
     STEP = 0.1  # 10%
     PRECISION = 100
-    MAX_COST = get_max_cost(region, instance.budget_limit)
+    MAX_COST = instance.budget_limit
     print(MAX_COST)
 
     num_projects = len(instance)
@@ -231,7 +201,11 @@ def compute_iterative_game(region, name, method, num_rounds=100):
 
 if __name__ == "__main__":
 
-    num_rounds = 1000
+    # method = 'mes_card_phragmen'
+    # method = 'mes_card'
+    # method = 'mtc'
+
+    solo = []
 
     if len(sys.argv) >= 2:
         regions = [str(sys.argv[1])]
@@ -250,9 +224,12 @@ if __name__ == "__main__":
         for name in names:
             print(name)
 
-            # compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=num_rounds)
-            # compute_iterative_game(region, name, 'greedy_cardinality_sat', num_rounds=num_rounds)
-            # compute_iterative_game(region, name, 'phragmen', num_rounds=num_rounds)
-            # compute_iterative_game(region, name, 'mes_phragmen', num_rounds=num_rounds)
-            # compute_iterative_game(region, name, 'mes_card_phragmen', num_rounds=num_rounds)
-            compute_iterative_game(region, name, 'mtc', num_rounds=num_rounds)
+            instance, profile = import_election(region, name)
+
+            results = {p.name: {'cost': p.cost, 'winner': 0} for p in instance}
+
+            winners_default = compute_winners(instance, profile, 'greedy_cost_sat')
+            print(winners_default)
+
+
+

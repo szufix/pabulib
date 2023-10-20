@@ -120,7 +120,7 @@ def import_original_winners(projects):
 def convert_winners(winners):
     new_winners = set()
     for w in winners:
-        new_winners.add(w.id)
+        new_winners.add(w.idx)
     return new_winners
 
 
@@ -136,7 +136,7 @@ def _store_results_in_csv(region, name, method, A, B, C, type, add):
     path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}_{add}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        writer.writerow(["id", "cost", "max_cost", "ratio", "difference"])
+        writer.writerow(["idx", "cost", "max_cost", "ratio", "difference"])
         for i in range(len(A)):
         #     print(A[i], B[i], C[i])
         #     print(A[i], B[i], C[i], C[i] / B[i], C[i] - B[i])
@@ -160,7 +160,7 @@ def update_costs_from_game(instance, region, name, method, add):
         reader = csv.DictReader(csv_file, delimiter=';')
 
         for row in reader:
-            new_cost[str(row['id'])] = float(row['last_cost'])
+            new_cost[str(row['idx'])] = float(row['last_cost'])
 
     for p in instance:
         p.cost = int(new_cost[p.name])

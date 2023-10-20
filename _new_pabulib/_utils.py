@@ -9,7 +9,7 @@ from pabutools.model import Election
 def convert_winners_to_set(winners):
     winners_as_set = set()
     for w in winners:
-        winners_as_set.add(w.id)
+        winners_as_set.add(w.idx)
     return winners_as_set
 
 

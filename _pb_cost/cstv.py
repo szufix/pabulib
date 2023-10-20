@@ -22,7 +22,7 @@ from pabutools.tiebreaking import TieBreakingRule, lexico_tie_breaking
 INFTY = math.inf
 
 
-# HELPER 1
+# HELPER FUNCTIONS
 def buy_with_surplus(votes, num_voters, max_ratio, max_id, surplus):
     for v in range(num_voters):
 
@@ -223,15 +223,17 @@ def get_weighted_votes_from_profile(profile):
 # PRINCIPAL METHODS
 def compute_MTC(instance: Instance, profile: AbstractProfile):
 
-    votes = get_weighted_votes_from_profile(profile)
-    costs = {project: project.cost for project in instance}
     budget = instance.budget_limit
+
+    votes = get_weighted_votes_from_profile(profile)
+    votes = prepare_votes(votes, budget)
+
+    costs = {project: project.cost for project in instance}
 
     num_votes = len(votes)
 
     winners = []
-    votes = prepare_votes(votes, budget)
-    ending = False
+    is_ending = False
 
     while True:
         ratio = {}
@@ -252,7 +254,7 @@ def compute_MTC(instance: Instance, profile: AbstractProfile):
                 max_ratio = ratio[key]
                 max_id = key
 
-        if not ending:
+        if not is_ending:
 
             if max_ratio >= 1:
 
@@ -279,7 +281,7 @@ def compute_MTC(instance: Instance, profile: AbstractProfile):
                             max_id = key
 
                 if max_id == -1:
-                    ending = True
+                    is_ending = True
                 else:
                     winners.append(max_id)
                     budget -= costs[max_id]
@@ -318,15 +320,18 @@ def compute_MTC(instance: Instance, profile: AbstractProfile):
 
 def compute_EwTC(instance: Instance, profile: AbstractProfile):
 
-    votes = get_weighted_votes_from_profile(profile)
-    costs = {project: project.cost for project in instance}
     budget = instance.budget_limit
+
+    votes = get_weighted_votes_from_profile(profile)
+    votes = prepare_votes(votes, budget)
+
+    costs = {project: project.cost for project in instance}
 
     num_votes = len(votes)
     num_projects = len(costs)
+
     winners = []
-    votes = prepare_votes(votes, budget)
-    ending = False
+    is_ending = False
 
     while True:
         ratio = {}
@@ -347,7 +352,7 @@ def compute_EwTC(instance: Instance, profile: AbstractProfile):
                 max_ratio = ratio[i]
                 max_id = i
 
-        if not ending:
+        if not is_ending:
 
             if max_ratio >= 1:
 
@@ -374,7 +379,7 @@ def compute_EwTC(instance: Instance, profile: AbstractProfile):
                             max_id = w
 
                 if max_id == -1:
-                    ending = True
+                    is_ending = True
                 else:
                     winners.append(max_id)
                     budget -= costs[max_id]
@@ -412,14 +417,17 @@ def compute_EwTC(instance: Instance, profile: AbstractProfile):
 
 
 def compute_EwT(instance: Instance, profile: AbstractProfile):
-    votes = get_weighted_votes_from_profile(profile)
-    costs = {project: project.cost for project in instance}
+
     budget = instance.budget_limit
+
+    votes = get_weighted_votes_from_profile(profile)
+    votes = prepare_votes(votes, budget)
+
+    costs = {project: project.cost for project in instance}
 
     num_votes = len(votes)
     num_projects = len(costs)
     winners = []
-    votes = prepare_votes(votes, budget)
     projects_removed = []
 
     while True:
@@ -486,15 +494,18 @@ def compute_EwT(instance: Instance, profile: AbstractProfile):
 
 
 def compute_MT(instance: Instance, profile: AbstractProfile):
-    votes = get_weighted_votes_from_profile(profile)
-    costs = {project: project.cost for project in instance}
+
     budget = instance.budget_limit
 
+    votes = get_weighted_votes_from_profile(profile)
+    costs = {project: project.cost for project in instance}
+
     num_votes = len(votes)
+
     winners = []
     ctr = 0
     votes = prepare_votes(votes, budget)
-    ending = False
+    is_ending = False
 
     while True:
 
@@ -533,7 +544,7 @@ def compute_MT(instance: Instance, profile: AbstractProfile):
                 max_support = support[i]
                 max_id = i
 
-        if not ending:
+        if not is_ending:
 
             if max_excess >= 0.:
                 max_ratio = max_support / costs[max_id]
@@ -562,7 +573,7 @@ def compute_MT(instance: Instance, profile: AbstractProfile):
                             max_id = w
 
                 if max_id == -1:
-                    ending = True
+                    is_ending = True
                 else:
 
                     max_ratio = max_support / costs[max_id]

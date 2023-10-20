@@ -50,7 +50,7 @@ def import_values(region, name, method, r):
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for row in reader:
-            id_ = str(row['id'])
+            id_ = str(row['idx'])
             cost = float(row['cost'])
             last_cost = float(row['last_cost'])
             winner = int(row['winner'])

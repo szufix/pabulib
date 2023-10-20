@@ -47,7 +47,7 @@ def import_values(region, name, method, limit=10, type=None):
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for row in reader:
-            id_ = str(row['id'])
+            id_ = str(row['idx'])
             cost = float(row['cost'])
             max_cost = float(row['max_cost'])
             costs[id_] = cost
@@ -64,7 +64,7 @@ def import_values_game(region, name, method, limit=10, type=None, add=''):
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for row in reader:
-            id_ = str(row['id'])
+            id_ = str(row['idx'])
             cost = float(row['cost'])
             max_cost = float(row['max_cost'])
             costs[id_] = cost
@@ -82,7 +82,7 @@ def import_values_game2(region, name, method, r):
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for row in reader:
-            id_ = str(row['id'])
+            id_ = str(row['idx'])
             cost = float(row['cost'])
             last_cost = float(row['last_cost'])
             winner = int(row['winner'])

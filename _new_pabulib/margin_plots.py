@@ -47,7 +47,7 @@ def import_values(region, name, method, limit=10, type=None):
     with open(path, 'r', newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=';')
         for row in reader:
-            id_ = str(row['id'])
+            id_ = str(row['idx'])
             cost = float(row['cost'])
             max_cost = float(row['max_cost'])
             costs[id_] = cost
@@ -72,14 +72,14 @@ def print_margin_plot(region, name, election,
 
     for c in election.profile:
         support.append(sum(election.profile[c].values()))
-        if c.id in winning_costs:
+        if c.idx in winning_costs:
             winning.append(True)
-            costs.append(winning_costs[c.id])
-            max_costs.append(winning_max_costs[c.id])
-        elif c.id in losing_costs:
+            costs.append(winning_costs[c.idx])
+            max_costs.append(winning_max_costs[c.idx])
+        elif c.idx in losing_costs:
             winning.append(False)
-            costs.append(losing_costs[c.id])
-            max_costs.append(losing_max_costs[c.id])
+            costs.append(losing_costs[c.idx])
+            max_costs.append(losing_max_costs[c.idx])
 
 
     ordered_costs = sort_by_indexes(costs, support, True)

@@ -43,18 +43,18 @@ def main_experiment(region, name, method):
         new_election, new_c = bundling(election, c1, c2)
         new_winners = compute_winners(new_election, method)
 
-        if new_c.id in new_winners:
-            if c1.id in winners and c2.id in winners:
+        if new_c.idx in new_winners:
+            if c1.idx in winners and c2.idx in winners:
                 results['win, both win'] += 1
-            elif c1.id in winners or c2.id in winners:
+            elif c1.idx in winners or c2.idx in winners:
                 results['win, single win'] += 1
             else:
                 results['win, both lose'] += 1
         else:
-            if c1.id in winners and c2.id in winners:
-                print(c1.id, c2.id)
+            if c1.idx in winners and c2.idx in winners:
+                print(c1.idx, c2.idx)
                 results['lose, both win'] += 1
-            elif c1.id in winners or c2.id in winners:
+            elif c1.idx in winners or c2.idx in winners:
                 results['lose, single win'] += 1
             else:
                 results['lose, both lose'] += 1

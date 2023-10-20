@@ -97,7 +97,7 @@ def import_original_winners(projects):
 def convert_winners(winners):
     new_winners = set()
     for w in winners:
-        new_winners.add(w.id)
+        new_winners.add(w.idx)
     return new_winners
 
 
@@ -113,7 +113,7 @@ def _store_results_in_csv(region, name, method, A, B, C, type):
     path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        writer.writerow(["id", "cost", "max_cost", "ratio", "difference"])
+        writer.writerow(["idx", "cost", "max_cost", "ratio", "difference"])
         for i in range(len(A)):
         #     print(A[i], B[i], C[i])
         #     print(A[i], B[i], C[i], C[i] / B[i], C[i] - B[i])

@@ -8,7 +8,7 @@ from pabutools.rules import completion_by_rule_combination
 from pabutools.rules import exhaustion_by_budget_increase
 from pabutools.rules import greedy_utilitarian_welfare, method_of_equal_shares, sequential_phragmen
 
-from cstv import compute_MTC
+from cstv import compute_MTC, compute_EwTC, compute_MT, compute_EwT
 
 
 def mes_full(instance, profile):
@@ -20,7 +20,7 @@ def mes_full(instance, profile):
             {
                 "rule": method_of_equal_shares,
                 "rule_params": {"sat_class": Cost_Sat},
-                "budget_step": float(instance.total_budget)/100,
+                "budget_step": float(instance.total_budget) / 100,
             },
             {"sat_class": Cost_Sat},
         ],
@@ -60,15 +60,10 @@ def mes_card_phragmen(instance, profile):
     )
 
 
-
-
-
-
-
 def convert_winners_to_set(winners):
     winners_as_set = set()
     for w in winners:
-        winners_as_set.add(w.id)
+        winners_as_set.add(w.idx)
     return winners_as_set
 
 
@@ -79,7 +74,8 @@ def compute_winners(instance, profile, method):
     if method == 'greedy_cost_sat':
         winners_tmp = greedy_utilitarian_welfare(instance_tmp, profile_tmp, sat_class=Cost_Sat)
     elif method == 'greedy_cardinality_sat':
-        winners_tmp = greedy_utilitarian_welfare(instance_tmp, profile_tmp, sat_class=Cardinality_Sat)
+        winners_tmp = greedy_utilitarian_welfare(instance_tmp, profile_tmp,
+                                                 sat_class=Cardinality_Sat)
     elif method == 'phragmen':
         winners_tmp = sequential_phragmen(instance_tmp, profile_tmp)
     elif method == 'mes_phragmen':
@@ -90,6 +86,12 @@ def compute_winners(instance, profile, method):
         winners_tmp = method_of_equal_shares(instance_tmp, profile_tmp, sat_class=Cardinality_Sat)
     elif method == 'mtc':
         winners_tmp = compute_MTC(instance_tmp, profile_tmp)
+    elif method == 'ewtc':
+        winners_tmp = compute_EwTC(instance_tmp, profile_tmp)
+    elif method == 'mt':
+        winners_tmp = compute_MT(instance_tmp, profile_tmp)
+    elif method == 'ewt':
+        winners_tmp = compute_EwT(instance_tmp, profile_tmp)
     else:
         winners_tmp = None
     return winners_tmp
@@ -139,8 +141,9 @@ def equal_power(e):
         best_diff = None
         best_c = None
         for c in remaining:
-            diff = {i : c.cost / len(e.profile[c]) for i in e.profile[c]}
-            power_inequality = sum((real_vector.get(i, 0) + diff.get(i, 0) - ideal_pt) ** 2 for i in e.voters)
+            diff = {i: c.cost / len(e.profile[c]) for i in e.profile[c]}
+            power_inequality = sum(
+                (real_vector.get(i, 0) + diff.get(i, 0) - ideal_pt) ** 2 for i in e.voters)
             if power_inequality < min_power_inequality:
                 best_c = c
                 best_diff = diff
@@ -170,8 +173,9 @@ def get_supporters(profile, c):
 
 
 def sort_by_indexes(lst, indexes, reverse=False):
-  return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
-          x[0], reverse=reverse)]
+    return [val for (_, val) in sorted(zip(indexes, lst), key=lambda x: \
+        x[0], reverse=reverse)]
+
 
 def convert(value):
     value /= 1000
@@ -180,5 +184,4 @@ def convert(value):
         value = int(value)
     else:
         value = round(value, 1)
-    # return f'{value}k'
     return f'{value}'

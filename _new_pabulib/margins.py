@@ -125,7 +125,7 @@ def import_original_winners(projects):
 def convert_winners(winners):
     new_winners = set()
     for w in winners:
-        new_winners.add(w.id)
+        new_winners.add(w.idx)
     return new_winners
 
 
@@ -141,7 +141,7 @@ def _store_results_in_csv(region, name, method, A, B, C, type):
     path = os.path.join(os.getcwd(), "margins", type, region, f'{name}_{method}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        writer.writerow(["id", "cost", "max_cost", "ratio", "difference"])
+        writer.writerow(["idx", "cost", "max_cost", "ratio", "difference"])
         for i in range(len(A)):
         #     print(A[i], B[i], C[i])
         #     print(A[i], B[i], C[i], C[i] / B[i], C[i] - B[i])
@@ -172,7 +172,7 @@ def compute_winning_margins(region, name, method):
 
     for c in election.profile:
 
-        if c.id in winners_default:
+        if c.idx in winners_default:
 
             original_c_cost = c.cost
 
@@ -185,12 +185,12 @@ def compute_winning_margins(region, name, method):
 
                 winners_tmp = compute_winners(election, method)
 
-                if c.id in winners_tmp:
+                if c.idx in winners_tmp:
                     left = c.cost
                 else:
                     right = c.cost
 
-            A.append(c.id)
+            A.append(c.idx)
             B.append(original_c_cost)
             C.append(c.cost)
 
@@ -212,7 +212,7 @@ def compute_losing_margins(region, name, method):
 
     for c in election.profile:
 
-        if c.id not in winners_default:
+        if c.idx not in winners_default:
 
             original_c_cost = c.cost
 
@@ -225,12 +225,12 @@ def compute_losing_margins(region, name, method):
 
                 winners_tmp = compute_winners(election, method)
 
-                if c.id in winners_tmp:
+                if c.idx in winners_tmp:
                     left = c.cost
                 else:
                     right = c.cost
 
-            A.append(c.id)
+            A.append(c.idx)
             B.append(original_c_cost)
             C.append(c.cost)
 

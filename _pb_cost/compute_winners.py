@@ -106,7 +106,7 @@ def import_original_winners(projects):
 def convert_winners(winners):
     new_winners = set()
     for w in winners:
-        new_winners.add(w.id)
+        new_winners.add(w.idx)
     return new_winners
 
 
@@ -122,7 +122,7 @@ def _store_game_results_in_csv(region, name, method, results, add=''):
     path = os.path.join(os.getcwd(), "games", region, f'{name}_{method}_{add}.csv')
     with open(path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        writer.writerow(["id", "cost", "last_cost", "winner"])
+        writer.writerow(["idx", "cost", "last_cost", "winner"])
 
         for r in results:
             writer.writerow([r,
@@ -229,7 +229,7 @@ if __name__ == "__main__":
 
     # method = 'mes_card_phragmen'
     # method = 'mes_card'
-    method = 'mtc'
+    # method = 'mtc'
 
     solo = []
 
@@ -250,16 +250,20 @@ if __name__ == "__main__":
         for name in names:
             print(name)
 
-            # compute_iterative_game(region, name, 'greedy_cost_sat', num_rounds=1)
-
             instance, profile = import_election(region, name)
 
             results = {p.name: {'cost': p.cost, 'winner': 0} for p in instance}
 
-            winners_default_1 = compute_winners(instance, profile, 'mes_phragmen')
+            print(len(instance), len(profile))
 
-            winners_default_2 = compute_winners(instance, profile, method)
-
+            winners_default = compute_winners(instance, profile, 'mes_card_phragmen')
+            print(winners_default)
+            # winners_default = compute_winners(instance, profile, 'ewtc')
+            # print(winners_default)
+            # winners_default = compute_winners(instance, profile, 'mt')
+            # print(winners_default)
+            # winners_default = compute_winners(instance, profile, 'ewt')
+            # print(winners_default)
 
 
 

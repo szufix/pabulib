@@ -131,7 +131,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 # def convert_winners(winners):
 #     new_winners = set()
 #     for w in winners:
-#         new_winners.add(w.id)
+#         new_winners.add(w.idx)
 #     return new_winners
 #
 #
@@ -147,7 +147,7 @@ plt.rcParams["font.family"] = "Times New Roman"
 #     path = os.path.join(os.getcwd(), "games", region, f'{name}_{method}_{add}.csv')
 #     with open(path, 'w', newline='') as csv_file:
 #         writer = csv.writer(csv_file, delimiter=';')
-#         writer.writerow(["id", "cost", "last_cost", "winner"])
+#         writer.writerow(["idx", "cost", "last_cost", "winner"])
 #
 #         for r in results:
 #             writer.writerow([r,
