@@ -1,23 +1,15 @@
-import itertools
-
-import numpy as np
-from matplotlib import pyplot as plt
-from scipy.stats import stats
-
-import mapel.elections as mapel
 
 import os
 import csv
 
-from mapel.core.matchings import solve_matching_vectors
 
-from .rules import *
+from .rules_main import *
 
 
 ## PARTS
 
 def convert_pabulib_data(experiment_id):
-    directory =  os.path.join(os.getcwd(), "experiments", experiment_id, 'rules_input', 'elections')
+    directory = os.path.join(os.getcwd(), "experiments", experiment_id, 'rules_input', 'elections')
     # List all files in the given directory
     files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
@@ -25,7 +17,7 @@ def convert_pabulib_data(experiment_id):
     files.sort()
 
     # Rename each file
-    for idx, file_name in enumerate(files, start=1):
+    for idx, file_name in enumerate(files):
         # Create the new file name
         new_file_name = f"pabulib_{idx}{os.path.splitext(file_name)[1]}"
 
@@ -63,7 +55,7 @@ def compute_rules(experiment_id, size, MAIN_RULE_IDS):
         print(rule)
         results = {}
 
-        for i in range(size):
+        for i in tqdm(range(size)):
             name_pb = f'pabulib_{i}.pb'
             instance, profile = import_pabulib_election(experiment_id, name_pb)
 

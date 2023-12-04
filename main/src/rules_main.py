@@ -19,12 +19,9 @@ from pabutools.rules import \
     popularity_comparison
 
 
-from .cstv import compute_MTC, compute_EwTC, compute_MT, compute_EwT
-
-
-
-def compute_pav(instance, profile):
-    pass
+from .rules.cstv import compute_MTC, compute_EwTC, compute_MT, compute_EwT
+from .rules.pav import compute_pb_pav
+from .rules.mes_eps import method_of_equal_shares_epsilon
 
 
 def mes_cost_phragmen(instance, profile):
@@ -37,8 +34,9 @@ def mes_cost_phragmen(instance, profile):
         ],
     )
 
+
 def mes_cost_epsilon(instance, profile):
-    pass
+    return method_of_equal_shares_epsilon(instance, profile, sat_class=Cost_Sat)
 
 
 def mes_cost_add1u(instance, profile):
@@ -85,7 +83,23 @@ def mes_card_add1u(instance, profile):
 
 
 def mes_card_epsilon(instance, profile):
-    pass
+    return method_of_equal_shares_epsilon(instance, profile, sat_class=Cardinality_Sat)
+
+
+def mes_cost(instance, profile):
+    return method_of_equal_shares(
+        instance,
+        profile,
+        sat_class=Cost_Sat,
+    )
+
+
+def mes_card(instance, profile):
+    return method_of_equal_shares(
+        instance,
+        profile,
+        sat_class=Cardinality_Sat,
+    )
 
 
 def greedy_utilitarian_welfare_cost_sat(instance_tmp, profile_tmp):
@@ -120,7 +134,9 @@ registered_rules = {
     'ewtc': compute_EwTC,
     'mt': compute_MT,
     'ewt': compute_EwT,
-    'pav': compute_pav,
+    'pb_pav': compute_pb_pav,
+    'mes_cost': mes_cost,
+    'mes_card': mes_card,
 }
 
 def mes_phragmen(instance, profile):

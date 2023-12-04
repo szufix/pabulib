@@ -23,7 +23,7 @@ INFTY = math.inf
 
 
 # HELPER FUNCTIONS
-def buy_with_surplus(votes, num_voters, max_ratio, max_id, surplus):
+def _buy_with_surplus(votes, num_voters, max_ratio, max_id, surplus):
     for v in range(num_voters):
 
         if max_id in votes[v] and votes[v][str(max_id)] != 0:
@@ -46,7 +46,7 @@ def buy_with_surplus(votes, num_voters, max_ratio, max_id, surplus):
     return votes, surplus
 
 
-def buy_from_transfers(votes, num_voters, max_ratio, max_id, cost):
+def _buy_from_transfers(votes, num_voters, max_ratio, max_id, cost):
     still_needed = cost * (1. - max_ratio)
     shares = compute_shares(votes, num_voters, max_id, still_needed)
 
@@ -260,7 +260,7 @@ def compute_MTC(instance: Instance, profile: AbstractProfile):
 
                 winners.append(max_id)
                 budget -= costs[max_id]
-                votes, surplus = buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
+                votes, surplus = _buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
 
             else:
                 max_ratio = 0.
@@ -291,7 +291,7 @@ def compute_MTC(instance: Instance, profile: AbstractProfile):
                             for p in votes[v]:
                                 money += votes[v][p]
 
-                    votes = buy_from_transfers(votes, num_votes, max_ratio, max_id, costs[max_id])
+                    votes = _buy_from_transfers(votes, num_votes, max_ratio, max_id, costs[max_id])
 
         else:
 
@@ -358,7 +358,7 @@ def compute_EwTC(instance: Instance, profile: AbstractProfile):
 
                 winners.append(max_id)
                 budget -= costs[max_id]
-                votes, surplus = buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
+                votes, surplus = _buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
 
             else:
                 max_ratio = 0.
@@ -389,7 +389,7 @@ def compute_EwTC(instance: Instance, profile: AbstractProfile):
                             for p in range(num_projects):
                                 money += votes[v][p]
 
-                    votes = buy_from_transfers(votes, num_votes, max_ratio, max_id, costs[max_id])
+                    votes = _buy_from_transfers(votes, num_votes, max_ratio, max_id, costs[max_id])
 
         else:
 
@@ -463,7 +463,7 @@ def compute_EwT(instance: Instance, profile: AbstractProfile):
 
             winners.append(max_id)
             budget -= costs[max_id]
-            votes, surplus = buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
+            votes, surplus = _buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
 
         else:
 
@@ -551,7 +551,7 @@ def compute_MT(instance: Instance, profile: AbstractProfile):
 
                 winners.append(max_id)
                 budget -= costs[max_id]
-                votes, surplus = buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
+                votes, surplus = _buy_with_surplus(votes, num_votes, max_ratio, max_id, surplus)
 
             else:
 
@@ -579,8 +579,8 @@ def compute_MT(instance: Instance, profile: AbstractProfile):
                     max_ratio = max_support / costs[max_id]
                     winners.append(max_id)
                     budget -= costs[max_id]
-                    votes = buy_from_transfers(votes, num_votes, max_ratio, max_id,
-                                               costs[max_id])
+                    votes = _buy_from_transfers(votes, num_votes, max_ratio, max_id,
+                                                costs[max_id])
         else:
 
             max_support = 0.
@@ -600,8 +600,8 @@ def compute_MT(instance: Instance, profile: AbstractProfile):
                 max_ratio = max_support / costs[max_id]
                 winners.append(max_id)
                 budget -= costs[max_id]
-                votes = buy_from_transfers(votes, num_votes, max_ratio, max_id,
-                                           costs[max_id])
+                votes = _buy_from_transfers(votes, num_votes, max_ratio, max_id,
+                                            costs[max_id])
 
         if budget < cheapest_project_left(costs, winners):
             break
