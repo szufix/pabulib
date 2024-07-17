@@ -35,7 +35,6 @@ if __name__ == "__main__":
 
     distance_id = 'jaccard'
 
-
     instance, profile = import_pabulib_election(experiment_id, name_pb)
 
     budgets = list(np.linspace(100000,3000000,30))
