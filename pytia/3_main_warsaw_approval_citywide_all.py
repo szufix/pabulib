@@ -48,7 +48,7 @@ def print_warszawa_citywide(year):
     for name in NAMES[f'warszawa_{year}c']:
 
         print(name)
-        path = f'pabulib_877/{name}'
+        path = f'pabulib/{name}'
         instance, profile = parse_pabulib(path)
 
         for v in profile:
@@ -165,8 +165,8 @@ if __name__ == "__main__":
     # print_warszawa_districts('2020')
     # print_warszawa_districts('2021')
 
-    # print_warszawa_citywide('2020')
+    print_warszawa_citywide('2020')
 
     # print_warszawa_citywide('2024')
     # print_wroclaw_citywide('2023')
-    print_amsterdam_citywide('252')
+    # print_amsterdam_citywide('252')

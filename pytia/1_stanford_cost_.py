@@ -104,6 +104,6 @@ if __name__ == "__main__":
     # print_cost_all('warszawa', 2024, savefig=True)
     # print_cost_all('wroclaw', 2023, savefig=True)
     # print_cost_all('amsterdam', 252, savefig=True)
-    # print_cost_all('wieliczka', 2023, savefig=True)
+    print_cost_all('wieliczka', 2023, savefig=True)
     stanford_name = "Worldwide_Stanford_PB_Vallejo_2017_vote_approvals"
     print_cost_all(stanford_name, savefig=True)

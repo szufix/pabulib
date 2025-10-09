@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # print_cost_all('amsterdam', 252, savefig=True)
     # print_cost_all('wieliczka', 2023, savefig=True)
 
-    stanford_name = "Worldwide_Stanford_PB_Vallejo_2017_vote_approvals"
-    stanford_name = "Worldwide_Stanford_PB_Cambridge_2019_vote_approvals"
-    stanford_name = "Worldwide_Stanford_PB_Rochester_NY_2019_vote_rankings_clean"
+    # stanford_name = "Worldwide_Stanford_PB_Vallejo_2017_vote_approvals"
+    stanford_name = "Worldwide_Stanford_PB_Cambridge_2015_vote_approvals"
+    # stanford_name = "Worldwide_Stanford_PB_Rochester_NY_2019_vote_rankings_clean"
     print_wieliczka_citywide(stanford_name)
